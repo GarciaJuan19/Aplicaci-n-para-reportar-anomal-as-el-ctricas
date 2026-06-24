@@ -1,0 +1,257 @@
+// ==========================================
+// DISEÑO EXCLUSIVO: REPORTAR ANOMALÍA
+// (Utilizando tus variables y tu mixin)
+// ==========================================
+@use 'variables' as *; // Importamos tus variables globales
+// ==========================================
+// DISEÑO EXCLUSIVO: REPORTAR ANOMALÍA (WEB COMPLETA)
+// (Utilizando tus variables y tu mixin)
+// ==========================================
+
+body {
+  background-color: $color-blanco; // Fondo de la página web completamente blanco
+  margin: 0;
+  padding: 0;
+  font-family: $fuente-base;
+}
+
+.app-container {
+  width: 100%; // Ocupa todo el ancho de la pantalla web
+  min-height: 100vh;
+  background-color: $color-fondo-input; // Fondo gris ligero para el contraste de la app
+  display: flex;
+  flex-direction: column;
+}
+
+// 1. Barra superior plana expandida a lo ancho de la web
+.app-header {
+  background-color: $color-principal;
+  color: $color-blanco;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px; // Un poco más de espacio a los lados para web
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  .btn-back {
+    color: $color-blanco;
+    font-size: 24px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  h1 {
+    font-size: 18px;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .header-spacer {
+    width: 24px;
+  }
+}
+
+// 2. Contenedor del formulario (Tarjeta centrada en la web)
+.app-content {
+  padding: 40px 20px; // Más espacio arriba y abajo para entorno web
+  flex: 1;
+  display: flex;
+  justify-content: center; // Centra la tarjeta en pantallas grandes
+
+  .card-form {
+    background-color: $color-blanco;
+    border-radius: $border-radius-m; // Tus 12px
+    padding: 32px;
+    width: 100%;
+    max-width: 600px; // Ancho ideal para un formulario web cómodo sin que se deforme
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); // Sombra suave para resaltar sobre el fondo grisáceo
+    display: flex;
+    flex-direction: column;
+    gap: 24px; 
+    height: fit-content; // Ajusta la tarjeta a su contenido interno
+  }
+}
+
+// 3. Inputs estilizados mediante tu Mixin
+.input-group {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    color: $color-texto-oscuro; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  textarea {
+    @include estilo-input; 
+    resize: none;
+    line-height: 1.4;
+  }
+}
+
+// Contenedor del Select
+.select-wrapper {
+  position: relative;
+  width: 100%;
+
+  select {
+    @include estilo-input; 
+    appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  i {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: $color-texto-mutado;
+    pointer-events: none;
+  }
+}
+
+// 4. Zona de Evidencia Fotográfica
+.upload-container {
+  border: 1.5px dashed lighten($color-principal, 15%);
+  background-color: rgba($color-principal, 0.02);
+  border-radius: $border-radius-s; // Tus 8px
+  padding: 32px 16px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+
+  i {
+    font-size: 32px;
+    color: $color-principal;
+  }
+
+  span {
+    font-size: 14px;
+    color: $color-principal;
+    font-weight: 500;
+  }
+
+  &:hover, &:active {
+    background-color: rgba($color-principal, 0.06);
+  }
+}
+
+// Contenedor de vista previa de imagen
+.preview-container {
+  position: relative;
+  margin-top: 8px;
+  border-radius: $border-radius-s;
+  overflow: hidden;
+  height: 200px; // Un poco más alto para web
+  border: 1px solid $color-borde;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: $color-blanco;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+
+// 5. Botón de Ubicación
+.btn-secondary {
+  width: 100%;
+  background-color: $color-fondo-input;
+  color: $color-texto-oscuro;
+  border: 1px solid $color-borde;
+  padding: 14px;
+  border-radius: $border-radius-s; 
+  font-family: $fuente-base;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+
+  i {
+    font-size: 18px;
+    color: $color-principal;
+  }
+
+  &:hover, &:active {
+    background-color: $color-borde;
+  }
+}
+
+.location-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: $color-texto-mutado;
+
+  i {
+    color: #10b981; 
+    font-size: 14px;
+  }
+}
+
+// 6. Botón Principal de Envío
+.btn-primary {
+  width: 100%;
+  background-color: $color-principal;
+  color: $color-blanco;
+  border: none;
+  padding: 14px;
+  border-radius: $border-radius-s; 
+  font-family: $fuente-base;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+  margin-top: 8px;
+
+  &:hover {
+    background-color: darken($color-principal, 5%);
+  }
+}
+
+.hidden {
+  display: none !important;
+}

@@ -1,0 +1,130 @@
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS DE LA PANTALLA DE PERFIL
+   ========================================================================== */
+$color-principal: #0a46d1;
+$color-texto-oscuro: #0f172a;
+$color-texto-mutado: #64748b;
+$color-peligro: #ef4444;
+
+.profile-main-container {
+    flex-grow: 1;
+    padding: 20px 16px;
+    overflow-y: auto; // Permite scroll vertical si hay muchas opciones
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 600px; // Centrado y controlado en pantallas web
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Tarjeta de Información de Usuario */
+.profile-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+    .profile-avatar {
+        font-size: 56px;
+        color: $color-principal;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-info {
+        h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: $color-texto-oscuro;
+        }
+        p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: $color-texto-mutado;
+        }
+    }
+}
+
+/* Listado de Opciones del Menú */
+.profile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .menu-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: $color-texto-mutado;
+        letter-spacing: 0.8px;
+        margin: 12px 0 4px 4px;
+    }
+
+    .menu-item {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+
+        &:active {
+            background-color: #f8fafc;
+        }
+
+        .icon-left {
+            font-size: 22px;
+            color: $color-principal;
+            margin-right: 14px;
+        }
+
+        .menu-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: $color-texto-oscuro;
+            flex-grow: 1;
+        }
+
+        .icon-right {
+            font-size: 18px;
+            color: #cbd5e1;
+        }
+    }
+}
+
+/* Botón Cerrar Sesión */
+.btn-logout {
+    margin-top: 24px;
+    background-color: rgba($color-peligro, 0.08);
+    border: 1px solid rgba($color-peligro, 0.2);
+    color: $color-peligro;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    transition: background-color 0.15s ease;
+
+    i {
+        font-size: 20px;
+    }
+
+    &:active {
+        background-color: rgba($color-peligro, 0.15);
+    }
+}

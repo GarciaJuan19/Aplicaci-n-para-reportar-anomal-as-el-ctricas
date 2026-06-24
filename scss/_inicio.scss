@@ -1,0 +1,136 @@
+// Variables de diseño basadas en tu propuesta
+$gradient-start: #0a2558;
+$gradient-end: #041432;
+$accent-yellow: #f5b041;
+$white: #ffffff;
+
+.welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, $gradient-start 0%, $gradient-end 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 99999;
+    
+    // --- PROPIEDADES PARA EL DESVANECIMIENTO ---
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+
+    // Clase que se activa mediante JavaScript después de 2.5 segundos
+    &.oculto {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none; // Evita interferir con los clics del formulario inferior
+    }
+}
+
+.welcome-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 40px 30px;
+    max-width: 650px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    
+    @media (max-width: 480px) {
+        padding: 30px 20px;
+        border-radius: 16px;
+    }
+}
+
+// --- APARTADO DEL LOGO ---
+.welcome-logo-container {
+    width: 90px;
+    height: 90px;
+    background-color: rgba(255, 255, 255, 0.1); 
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    animation: welcome-pulse 2.5s infinite ease-in-out;
+
+    .welcome-logo {
+        max-width: 75%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    @media (max-width: 480px) {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+.welcome-title {
+    color: $white;
+    font-size: 3.2rem;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.02em;
+
+    @media (max-width: 480px) {
+        font-size: 2.4rem;
+    }
+}
+
+.welcome-divider {
+    width: 50px;
+    height: 4px;
+    background-color: $accent-yellow;
+    border-radius: 2px;
+    margin: 0 auto 25px auto;
+}
+
+.welcome-subtitle {
+    color: $white;
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+
+    @media (max-width: 480px) {
+        font-size: 1.8rem;
+    }
+}
+
+.welcome-tagline {
+    color: rgba($white, 0.9);
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin: 0 0 12px 0;
+
+    @media (max-width: 480px) {
+        font-size: 1rem;
+    }
+}
+
+.welcome-description {
+    color: rgba($white, 0.65);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    max-width: 520px;
+    margin: 0 auto;
+
+    @media (max-width: 480px) {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+}
+
+// Animación sutil de respiración para el logo
+@keyframes welcome-pulse {
+    0% { transform: scale(1); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
+    50% { transform: scale(1.04); box-shadow: 0 12px 32px rgba(245, 176, 65, 0.2); } 
+    100% { transform: scale(1); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
+}

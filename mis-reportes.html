@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Mis Reportes</title>
+    <script type="module" src="js/mis-reportes.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+
+    <div class="app-container reports-page">
+        
+        <header class="app-header navbar-clean">
+            <a href="menu.html" class="btn-back">
+                <i class='bx bx-chevron-left'></i>
+            </a>
+            <h1 class="header-title">Mis reportes</h1>
+            <div class="header-placeholder"></div> </header>
+
+       <div class="filter-tabs-container">
+    <div class="filter-tabs">
+        <button type="button" class="tab active">Todos</button>
+        <button type="button" class="tab">En revisión</button>
+        <button type="button" class="tab">Resuelto</button>
+    </div>
+</div>
+
+        <main class="app-content body-scroll">
+            
+            <div id="contenedor-reportes" class="reports-list">
+                
+                <div class="loading-state">
+                    <i class='bx bx-loader-alt bx-spin'></i>
+                    <p>Cargando tu historial de anomalías...</p>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class='bx bx-plus-circle'></i>
+            <span>Reportar</span>
+        </a>
+        <a href="mis-reportes.html" class="nav-item">
+            <i class='bx bx-list-ul'></i>
+            <span>Mis Reportes</span>
+        </a>
+        <a href="mapa.html" class="nav-item active">
+            <i class='bx bx-map-alt'></i>
+            <span>Mapa</span>
+        </a>
+        <a href="perfil.html" class="nav-item">
+            <i class='bx bx-user'></i>
+            <span>Perfil</span>
+        </a>
+    </nav>
+    
+</body>
+</html>

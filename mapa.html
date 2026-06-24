@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Mapa de Fallas</title>
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="app-body">
+    
+    <header class="app-header">
+        
+            <a href="menu.html" class="btn-back"><i class='bx bx-left-arrow-alt'></i></a>
+            <h2 >Fallo Cero</h2>
+            <p>Ubicaciones cercanas de anomalías eléctricas</p>
+        
+    </header>
+
+    <main class="map-main-container">
+        <div id="map"></div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class='bx bx-plus-circle'></i>
+            <span>Reportar</span>
+        </a>
+        <a href="mis-reportes.html" class="nav-item">
+            <i class='bx bx-list-ul'></i>
+            <span>Mis Reportes</span>
+        </a>
+        <a href="mapa.html" class="nav-item active">
+            <i class='bx bx-map-alt'></i>
+            <span>Mapa</span>
+        </a>
+        <a href="perfil.html" class="nav-item">
+            <i class='bx bx-user'></i>
+            <span>Perfil</span>
+        </a>
+    </nav>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <script type="module" src="js/mapa.js"></script>
+</body>
+</html>

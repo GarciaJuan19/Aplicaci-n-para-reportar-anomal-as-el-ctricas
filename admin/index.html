@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Admin Panel</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script type="module" src="../js/admin.js"></script>
+</head>
+<body class="bg-light">
+
+    <div class="admin-container">
+        
+        <header class="admin-header">
+            <div class="admin-profile">
+                <img src="../img/Logo3.png" alt="Admin" class="admin-avatar">
+                <h1 class="admin-title">Admin Panel</h1>
+            </div>
+            <button class="btn-notification" id="btn-logout"><i class='bx bx-log-out'></i></button>
+        </header>
+
+        <div class="search-section">
+            <div class="search-wrapper">
+                <i class='bx bx-search search-icon'></i>
+                <input type="text" id="search-input" placeholder="Buscar reporte o dirección...">
+            </div>
+            <button class="btn-filter-date" id="btn-filter-date">
+                <i class='bx bx-calendar'></i> Filtrar por fecha
+            </button>
+        </div>
+
+        <div class="filter-pills">
+            <button class="pill active" data-status="Todos">Todos</button>
+            <button class="pill" data-status="PENDIENTE">Pendiente</button>
+            <button class="pill" data-status="EN REVISIÓN">En revisión</button>
+            <button class="pill" data-status="RESUELTO">Resuelto</button>
+        </div>
+
+        <main class="reports-list" id="reports-container">
+            <div class="loading-state">
+                <i class='bx bx-loader-alt bx-spin'></i>
+                <p>Cargando reportes desde Firestore...</p>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="index.html" class="nav-item active">
+                <i class='bx bx-file-blank'></i>
+                <span>Reportes</span>
+            </a>
+            <a href="mapa-admin.html" class="nav-item">
+                <i class='bx bx-map-alt'></i>
+                <span>Mapa</span>
+            </a>
+   
+            <a href="perfil-admin.html" class="nav-item">
+                <i class='bx bx-cog'></i>
+                <span>Ajustes</span>
+            </a>
+        </nav>
+    </div>
+    
+</body>
+</html>

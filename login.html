@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Iniciar Sesión</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body class="login-page">
+
+    <div id="splash-screen" class="welcome-screen">
+        <div class="welcome-card">
+            <div class="welcome-logo-container">
+                <img src="img/Logo3.png" alt="FalloCero Logo" class="welcome-logo">
+            </div>
+
+            <h1 class="welcome-title">FalloCero</h1>
+            <div class="welcome-divider"></div>
+            
+            <h2 class="welcome-subtitle">Bienvenido</h2>
+            
+            <p class="welcome-tagline">Tu plataforma para una ciudad conectada</p>
+            <p class="welcome-description">
+                Colabora en la construcción de una infraestructura eléctrica eficiente 
+                y reporta incidencias en tiempo real para un mejor servicio ciudadano.
+            </p>
+        </div>
+    </div>
+
+    <div class="login-content">
+
+        <div class="login-brand">
+            <div class="logo-circle">
+                <img src="img/Logo3.png" alt="FalloCero Logo" class="brand-logo">
+            </div>
+            <h1 style="color: #0052cc; text-align: center;">FalloCero</h1>
+            <p>Reporta y monitorea anomalías eléctricas</p>
+        </div>
+
+        <form id="form-login" class="card-form">
+
+            <div class="login-card-header">
+                <h2>Bienvenido</h2>
+                <p>Ingresa tus datos para acceder a tu cuenta</p>
+            </div>
+
+            <div class="input-group">
+                <label for="login-email">Correo electrónico</label>
+                <div class="input-wrapper">
+                    <i class='bx bx-envelope input-icon'></i>
+                    <input type="email" id="login-email" placeholder="tucorreo@ejemplo.com" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="login-password">Contraseña</label>
+                <div class="input-wrapper">
+                    <i class='bx bx-lock-alt input-icon'></i>
+                    <input type="password" id="login-password" placeholder="Tu contraseña" required>
+                    <i class='bx bx-hide password-toggle' id="toggle-password"
+                        style="cursor: pointer; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px;"></i>
+                </div>
+            </div>
+
+            <div class="form-helpers">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="remember-me">
+                    <span class="checkmark"></span> Recordarme
+                </label>
+                <a href="recuperarPassword.html" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="btn-iniciar">
+                    <i class='bx bx-bolt'></i> Iniciar sesión
+                </button>
+            </div>
+
+            <div class="form-footer">
+                <span>¿No tienes una cuenta? <a href="registro.html">Regístrate</a></span>
+            </div>
+
+        </form>
+
+        <div class="login-legal">
+            <p>Al continuar aceptas nuestros Términos y Política de privacidad</p>
+        </div>
+
+    </div>
+
+    <script type="module" src="js/login.js"></script>
+</body>
+
+</html>

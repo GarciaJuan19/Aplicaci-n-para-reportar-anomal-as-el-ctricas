@@ -1,0 +1,285 @@
+// Variables del Panel de Administración
+$primary-dark: #0a1b5c;
+$primary-blue: #0052cc;
+$bg-gray: #f8fafc;
+$white: #ffffff;
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$border-color: #e2e8f0;
+
+// Estados
+$bg-pendiente: #ffe4e6;
+$text-pendiente: #e11d48;
+$bg-revision: #fef3c7;
+$text-revision: #d97706;
+$bg-resuelto: #dcfce7;
+$text-resuelto: #16a34a;
+
+.admin-container {
+    max-width: 480px;
+    margin: 0 auto;
+    background-color: $bg-gray;
+    min-height: 100vh;
+    padding: 16px 16px 80px 16px; // Espacio inferior para que la barra nav no tape contenido
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+
+    .admin-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .admin-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .admin-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: $primary-dark;
+            margin: 0;
+        }
+    }
+
+    .btn-notification {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: $primary-dark;
+        cursor: pointer;
+    }
+}
+
+.search-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .search-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            color: $text-muted;
+            font-size: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 1px solid $border-color;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            background-color: $white;
+
+            &:focus {
+                border-color: $primary-blue;
+            }
+        }
+    }
+
+    .btn-filter-date {
+        background-color: $white;
+        border: 1px solid $primary-dark;
+        color: $text-dark;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+}
+
+.filter-pills {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+
+    &::-webkit-scrollbar {
+        display: none; // Ocultar barra de scroll en móviles
+    }
+
+    .pill {
+        background-color: $white;
+        border: 1px solid $border-color;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: $text-muted;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+
+        &.active {
+            background-color: $primary-dark;
+            color: $white;
+            border-color: $primary-dark;
+        }
+    }
+}
+
+// Tarjetas de Reportes (Dashboard Dinámico)
+.reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.report-card {
+    background-color: $white;
+    border: 1px solid $border-color;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+
+    .card-header-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        .title-block {
+            display: flex;
+            gap: 12px;
+
+            .icon-type {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                background-color: #fee2e2; // Color por defecto para alertas
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: $text-pendiente;
+                font-size: 20px;
+            }
+
+            .text-meta {
+                h3 {
+                    font-size: 1.1rem;
+                    color: $text-dark;
+                    margin: 0 0 4px 0;
+                    font-weight: 600;
+                }
+                span {
+                    font-size: 0.82rem;
+                    color: $text-muted;
+                }
+            }
+        }
+
+        // Etiquetas de estado dinámicas
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+
+            &.pendiente { background-color: $bg-pendiente; color: $text-pendiente; }
+            &.en-revision { background-color: $bg-revision; color: $text-revision; }
+            &.resuelto { background-color: $bg-resuelto; color: $text-resuelto; }
+        }
+    }
+
+    .card-location {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+        color: $text-muted;
+        margin: 4px 0;
+    }
+
+    .card-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        border-top: 1px solid $border-color;
+        padding-top: 12px;
+
+        button, select {
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-details {
+            background: none;
+            color: $primary-dark;
+        }
+
+        .select-action {
+            background-color: $primary-dark;
+            color: $white;
+            font-family: inherit;
+            outline: none;
+        }
+    }
+}
+
+// Barra de Navegación Inferior Fija
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background-color: $white;
+    border-top: 1px solid $border-color;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 10;
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        text-decoration: none;
+        color: $text-muted;
+        font-size: 0.75rem;
+
+        i { font-size: 22px; }
+
+        &.active {
+            color: $primary-blue;
+            font-weight: 600;
+        }
+    }
+}
+
+.loading-state {
+    text-align: center;
+    padding: 40px 0;
+    color: $text-muted;
+    i { font-size: 32px; margin-bottom: 8px; }
+}

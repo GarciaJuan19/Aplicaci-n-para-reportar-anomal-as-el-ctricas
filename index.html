@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Reportar Anomalía</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="js/reportar.js"></script>
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            
+            <a href="menu.html" class="btn-back"><i class='bx bx-left-arrow-alt'></i></a>
+            <h1>Reportar Anomalía</h1>
+            <div class="header-spacer"></div> </header>
+
+        <main class="app-content">
+            <form id="form-reporte" class="card-form">
+                
+                <div class="input-group">
+                    <label for="tipo-falla">Tipo de anomalía</label>
+                    <div class="select-wrapper">
+                        <select id="tipo-falla" required>
+                            <option value="" disabled selected>Selecciona una opción...</option>
+                            <option value="poste">Poste caído / Dañado</option>
+                            <option value="cable">Cable suelto o expuesto</option>
+                            <option value="corto">Cortocircuito</option>
+                            <option value="sin_luz">Sin suministro eléctrico (Apagón)</option>
+                            <option value="voltaje">Variación de voltaje severa</option>
+                            <option value="luminaria">Luminaria pública fallando</option>
+                        </select>
+                        <i class='bx bx-chevron-down'></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="descripcion">Descripción detallada</label>
+                    <textarea id="descripcion" rows="4" placeholder="Describe brevemente la situación o referencias del lugar..." required></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Evidencia fotográfica</label>
+                    <div class="upload-container" id="btn-camara">
+                        <i class='bx bx-camera'></i>
+                        <span>Tomar foto o subir archivo</span>
+                        <input type="file" id="input-file" accept="image/*" capture="environment" hidden>
+                    </div>
+                    <div id="preview-container" class="preview-container hidden">
+                        <img id="img-preview" src="" alt="Vista previa">
+                        <button type="button" id="btn-remove-img"><i class='bx bx-x'></i></button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Ubicación del incidente</label>
+                    <button type="button" id="btn-location" class="btn-secondary">
+                        <i class='bx bx-map-pin'></i> Obtener ubicación actual
+                    </button>
+                    <div id="location-status" class="location-status">
+                        <i class='bx bx-check-circle hidden' id="geo-success"></i>
+                        <span id="geo-text">Ubicación no establecida</span>
+                    </div>
+                    <input type="hidden" id="latitud">
+                    <input type="hidden" id="longitud">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="btn-enviar">
+                        <i class='bx bx-send'></i> Enviar Reporte
+                    </button>
+                </div>
+
+            </form>
+        </main>
+    </div>
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class='bx bx-plus-circle'></i>
+            <span>Reportar</span>
+        </a>
+        <a href="mis-reportes.html" class="nav-item">
+            <i class='bx bx-list-ul'></i>
+            <span>Mis Reportes</span>
+        </a>
+        <a href="mapa.html" class="nav-item active">
+            <i class='bx bx-map-alt'></i>
+            <span>Mapa</span>
+        </a>
+        <a href="perfil.html" class="nav-item">
+            <i class='bx bx-user'></i>
+            <span>Perfil</span>
+        </a>
+    </nav>
+</body>
+</html>

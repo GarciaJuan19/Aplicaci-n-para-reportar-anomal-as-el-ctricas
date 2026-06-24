@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Mi Perfil</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body class="bg-light">
+
+    <div class="profile-container">
+        
+        <header class="profile-header">
+            <a href="menu.html" class="btn-back"><i class='bx bx-arrow-back'></i></a>
+            <h2>Mi Perfil</h2>
+            <div class="header-placeholder"></div>
+        </header>
+
+        <div class="profile-card-hero">
+            <div class="avatar-wrapper">
+                <img src="img/default-avatar.png" id="profile-preview" alt="Foto de perfil">
+                <label for="file-avatar" class="avatar-edit-badge">
+                    <i class='bx bx-camera'></i>
+                </label>
+                <input type="file" id="file-avatar" accept="image/*" style="display: none;">
+            </div>
+            <h3 id="txt-user-name">Cargando...</h3>
+            <p id="txt-user-email">...</p>
+        </div>
+
+        <form id="form-profile" class="profile-form">
+            
+            <div class="form-section-title">Datos Personales</div>
+
+            <div class="input-group">
+                <label for="profile-name">Nombre completo</label>
+                <div class="input-wrapper">
+                    <i class='bx bx-user input-icon'></i>
+                    <input type="text" id="profile-name" placeholder="Tu nombre" required>
+                </div>
+            </div>
+
+            <div class="form-section-title">Seguridad de la Cuenta</div>
+
+            <div class="input-group">
+                <label for="profile-password">Nueva Contraseña (Opcional)</label>
+                <div class="input-wrapper">
+                    <i class='bx bx-lock-alt input-icon'></i>
+                    <input type="password" id="profile-password" placeholder="Mínimo 8 caracteres (letras y números)">
+                    <i class='bx bx-hide password-toggle' id="toggle-profile-pass" style="cursor: pointer; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px;"></i>
+                </div>
+                <small class="input-help">Solo llénalo si deseas cambiar tu contraseña actual.</small>
+            </div>
+
+            <div class="profile-actions">
+                <button type="submit" class="btn-primary" id="btn-save-profile">
+                    <i class='bx bx-save'></i> Guardar Cambios
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+    <script type="module" src="js/perfil.js"></script>
+</body>
+
+</html>

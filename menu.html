@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Menú Principal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+</head>
+<body>
+
+    <div class="app-container">
+        <header class="menu-header">
+            <div class="user-profile-section">
+                <div class="avatar-container">
+                    <img src="img/logo3.png" alt="FalloCero Logo" class="menu-logo-avatar">
+                </div>
+                <div class="user-welcome">
+                    <span>Bienvenido</span>
+                    <h2 id="user-display-name">Juan</h2>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-content menu-content">
+            
+            <a href="index.html" class="menu-card">
+                <div class="card-icon icon-alert">
+                    <i class='bx bx-error-alt'></i>
+                </div>
+                <div class="card-info">
+                    <h3>Reportar anomalía</h3>
+                    <p>Notifica una nueva falla eléctrica</p>
+                </div>
+                <i class='bx bx-chevron-right arrow-next'></i>
+            </a>
+
+            <a href="mis-reportes.html" class="menu-card">
+                <div class="card-icon icon-reports">
+                    <i class='bx bx-list-check'></i>
+                </div>
+                <div class="card-info">
+                    <h3>Mis reportes</h3>
+                    <p>Revisa el estado de tus reportes</p>
+                </div>
+                <i class='bx bx-chevron-right arrow-next'></i>
+            </a>
+
+            <a href="mapa.html" class="menu-card">
+                <div class="card-icon icon-map">
+                    <i class='bx bx-map-alt'></i>
+                </div>
+                <div class="card-info">
+                    <h3>Ver ubicación</h3>
+                    <p>Mapa de fallas cercanas</p>
+                </div>
+                <i class='bx bx-chevron-right arrow-next'></i>
+            </a>
+
+            <a href="perfil.html" class="menu-card">
+                <div class="card-icon icon-profile">
+                    <i class='bx bx-user'></i>
+                </div>
+                <div class="card-info">
+                    <h3>Mi perfil</h3>
+                    <p>Administra tu cuenta</p>
+                </div>
+                <i class='bx bx-chevron-right arrow-next'></i>
+            </a>
+
+            <button type="button" id="btn-logout" class="menu-card card-logout">
+                <div class="card-icon icon-logout">
+                    <i class='bx bx-log-out'></i>
+                </div>
+                <div class="card-info">
+                    <h3>Cerrar sesión</h3>
+                    <p>Salir de tu cuenta</p>
+                </div>
+            </button>
+
+        </main>
+    </div>
+
+    <script type="module" src="js/menu.js"></script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+// --- VARIABLES DE DISEÑO ---
+$primary-color: #0045cb;
+$text-dark: #333333;
+$text-muted: #555555;
+$border-color: #d1d5db;
+$bg-body: #f8fafc;
+$font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+// --- ESTILOS BASE ---
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.auth-body {
+    font-family: $font-family;
+    background-color: $bg-body;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+// --- CONTENEDOR PRINCIPAL ---
+.auth-container {
+    background-color: #ffffff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    // --- HEADER ---
+    .auth-header {
+        margin-bottom: 30px;
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: $primary-color;
+
+            // Ocultamos el icono o el texto si prefieres basarte solo en la imagen, 
+            // pero para mantener tu HTML los dejamos con un estilo limpio y corporativo.
+            .logo-icon {
+                font-size: 2rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+                font-weight: 700;
+            }
+        }
+
+        .auth-subtitle {
+            font-size: 0.95rem;
+            color: $text-muted;
+            line-height: 1.5;
+        }
+    }
+
+    // --- FORMULARIO ---
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        // Estructura grid para poner Contraseña y Confirmar lado a lado
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        
+        // Los grupos normales ocupan todo el ancho (2 columnas)
+        .input-group {
+            grid-column: span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            label {
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: $text-muted;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .input-field {
+                position: relative;
+                display: flex;
+                align-items: center;
+
+                .input-icon {
+                    position: absolute;
+                    left: 14px;
+                    font-size: 1.3rem;
+                    color: $text-muted;
+                    pointer-events: none;
+                }
+
+                input {
+                    width: 100%;
+                    padding: 14px 14px 14px 45px;
+                    border: 1px solid $border-color;
+                    border-radius: 6px;
+                    font-size: 1rem;
+                    color: $text-dark;
+                    background-color: #fafafa;
+                    transition: border-color 0.2s, background-color 0.2s;
+
+                    &::placeholder {
+                        color: #9ca3af;
+                    }
+
+                    &:focus {
+                        outline: none;
+                        border-color: $primary-color;
+                        background-color: #ffffff;
+                    }
+                }
+
+                // Botón para mostrar/ocultar contraseña incluido en tu HTML
+                .btn-toggle-password {
+                    position: absolute;
+                    right: 14px;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: $text-muted;
+                    font-size: 1.2rem;
+                    display: flex;
+                    align-items: center;
+                    
+                    &:hover {
+                        color: $primary-color;
+                    }
+                }
+            }
+        }
+
+        // Target específico para las contraseñas (para que se dividan a la mitad como en la imagen)
+        // Buscamos los grupos que contienen el ID de password o confirmar
+        .input-group:has(#reg-password),
+        .input-group:has(#reg-confirmar) {
+            grid-column: span 1;
+            
+            // Ajustamos el padding derecho en el input de contraseña para que no tape el icono de "ver"
+            .input-field input {
+                padding-right: 40px;
+            }
+        }
+
+        // --- CHECKBOX / TÉRMINOS ---
+        .checkbox-group {
+            grid-column: span 2;
+            margin-top: 5px;
+
+            .checkbox-label {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: $text-muted;
+                line-height: 1.4;
+
+                // Escondemos el checkbox nativo para usar el tuyo personalizado (checkbox-custom)
+                input[type="checkbox"] {
+                    display: none;
+
+                    &:checked + .checkbox-custom {
+                        background-color: $primary-color;
+                        border-color: $primary-color;
+
+                        &::after {
+                            display: block;
+                        }
+                    }
+                }
+
+                // Caja del Checkbox personalizado
+                .checkbox-custom {
+                    width: 20px;
+                    height: 20px;
+                    border: 1px solid $border-color;
+                    border-radius: 4px;
+                    flex-shrink: 0;
+                    position: relative;
+                    margin-top: 2px;
+                    transition: all 0.2s;
+
+                    // El check (✓) blanco interno
+                    &::after {
+                        content: '';
+                        position: absolute;
+                        display: none;
+                        left: 6px;
+                        top: 2px;
+                        width: 5px;
+                        height: 10px;
+                        border: solid white;
+                        border-width: 0 2px 2px 0;
+                        transform: rotate(45deg);
+                    }
+                }
+
+                .label-text {
+                    .auth-link {
+                        color: $primary-color;
+                        text-decoration: none;
+                        font-weight: 600;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- BOTÓN REGISTRAR ---
+        .btn-auth-submit {
+            grid-column: span 2;
+            background-color: $primary-color;
+            color: #ffffff;
+            border: none;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+
+            &:hover {
+                background-color: $primary-color;
+            }
+        }
+    }
+
+    // --- FOOTER (¿Ya tienes cuenta?) ---
+    .auth-footer {
+        margin-top: 30px;
+        text-align: center;
+        position: relative;
+
+        // Añadimos el separador "o" que aparece en tu imagen antes del enlace de login
+        &::before {
+            content: 'o';
+            display: block;
+            text-align: center;
+            color: $text-muted;
+            margin-bottom: 25px;
+            position: relative;
+            font-size: 0.9rem;
+            
+            // Líneas laterales del separador "o"
+            background: #ffffff;
+            width: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            z-index: 2;
+        }
+
+        // Línea horizontal gris por detrás de la "o"
+        display: flex;
+        flex-direction: column;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: $border-color;
+            z-index: 1;
+        }
+
+        p {
+            font-size: 0.95rem;
+            color: $text-dark;
+            z-index: 2; // Asegura que quede por encima de la línea si se cruzan
+
+            .auth-link-action {
+                color: $primary-color;
+                text-decoration: none;
+                font-weight: 700;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+// --- RESPONSIVE ---
+@media (max-width: 480px) {
+    body.auth-body {
+        padding: 10px;
+    }
+
+    .auth-container {
+        padding: 25px 20px;
+        
+        .auth-form {
+            // En pantallas muy chicas, las contraseñas se apilan verticalmente
+            .input-group:has(#reg-password),
+            .input-group:has(#reg-confirmar) {
+                grid-column: span 2;
+            }
+        }
+    }
+}

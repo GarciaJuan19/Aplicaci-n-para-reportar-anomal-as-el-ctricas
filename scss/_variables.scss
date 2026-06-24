@@ -1,0 +1,35 @@
+// 1. Colores globales (tomados de tu pantalla de Registro)
+$color-principal: #0a46d1;      // El azul vibrante de los botones
+$color-texto-oscuro: #2d3748;   // Para los labels (Nombre completo, Correo...)
+$color-texto-mutado: #718096;  // Para los placeholders y texto secundario
+$color-borde: #e2e8f0;          // El gris sutil de los inputs
+$color-fondo-input: #f8fafc;    // Fondo ligeramente gris si aplica, o blanco #ffffff
+$color-blanco: #ffffff;
+
+// 2. Tipografía y Radios
+$fuente-base: 'Inter', system-ui, -apple-system, sans-serif;
+$border-radius-m: 12px;         // El redondeado suave de tus tarjetas y botones
+$border-radius-s: 8px;          // Para los inputs individuales
+
+// 3. Mixin para reutilizar el estilo de los campos de texto/selects
+@mixin estilo-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: $fuente-base;
+  font-size: 14px;
+  color: $color-texto-oscuro;
+  background-color: $color-blanco;
+  border: 1px solid $color-borde;
+  border-radius: $border-radius-s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+
+  &::placeholder {
+    color: $color-texto-mutado;
+  }
+
+  &:focus {
+    border-color: $color-principal;
+    box-shadow: 0 0 0 3px rgba($color-principal, 0.15);
+  }
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FalloCero - Crear Cuenta</title>
+    
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-body">
+
+    <main class="auth-container">
+        <header class="auth-header">
+            <div class="logo-area">
+                <i class='bx bxs-bolt-circle logo-icon'></i>
+                <h1>FalloCero</h1>
+            </div>
+            <p class="auth-subtitle">Regístrate para reportar y monitorear anomalías eléctricas en tu comunidad</p>
+        </header>
+
+        <form id="form-registro" class="auth-form" novalidate>
+            
+            <div class="input-group">
+                <label for="reg-nombre">Nombre Completo</label>
+                <div class="input-field">
+                    <i class='bx bx-user input-icon'></i>
+                    <input type="text" id="reg-nombre" placeholder="Ej. Juan De La Cruz" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="reg-correo">Correo Electrónico</label>
+                <div class="input-field">
+                    <i class='bx bx-envelope input-icon'></i>
+                    <input type="email" id="reg-correo" placeholder="ejemplo@gmail.com" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="reg-password">Contraseña</label>
+                <div class="input-field">
+                    <i class='bx bx-lock-alt input-icon'></i>
+                    <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres" style="font-size: 10px; font-weight: bold;" required>
+                    <button type="button" id="toggle-reg-password" class="btn-toggle-password" aria-label="Mostrar u ocultar contraseña">
+                        <i class='bx bx-show'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="reg-confirmar">Confirmar Contraseña</label>
+                <div class="input-field">
+                    <i class='bx bx-lock-check input-icon'></i>
+                    <input type="password" id="reg-confirmar" placeholder="Repite tu contraseña" style="font-size: 10px; font-weight: bold;" required>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="reg-terminos" required>
+                    <span class="checkbox-custom"></span>
+                    <span class="label-text">Acepto los <a href="#" class="auth-link">Términos de Servicio</a> y la <a href="#" class="auth-link">Política de Privacidad</a>.</span>
+                </label>
+            </div>
+
+            <button type="submit" id="btn-registrar" class="btn-auth-submit">
+                Registrar Cuenta
+            </button>
+        </form>
+
+        <footer class="auth-footer">
+            <p>¿Ya tienes una cuenta? <a href="login.html" class="auth-link-action">Inicia Sesión</a></p>
+        </footer>
+    </main>
+
+    <script type="module" src="js/registro.js"></script>
+</body>
+</html>
