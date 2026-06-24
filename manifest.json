@@ -1,6 +1,6 @@
 {
-  "name": "Nombre Completo de mi App",
-  "short_name": "MiApp",
+  "name": "FalloCero",
+  "short_name": "FalloCero",
   "start_url": "/login.html",
   "display": "standalone",
   "background_color": "#ffffff",
