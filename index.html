@@ -6,17 +6,16 @@
     <title>FalloCero - Reportar Anomalía</title>
     <link rel="stylesheet" href="css/style.css">
     <script type="module" src="js/reportar.js"></script>
-    
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
 
     <div class="app-container">
         <header class="app-header">
-            
             <a href="menu.html" class="btn-back"><i class='bx bx-left-arrow-alt'></i></a>
             <h1>Reportar Anomalía</h1>
-            <div class="header-spacer"></div> </header>
+            <div class="header-spacer"></div>
+        </header>
 
         <main class="app-content">
             <form id="form-reporte" class="card-form">
@@ -47,8 +46,11 @@
                     <div class="upload-container" id="btn-camara">
                         <i class='bx bx-camera'></i>
                         <span>Tomar foto o subir archivo</span>
-                        <input type="file" id="input-file" accept="image/*" capture="environment" hidden>
                     </div>
+                    
+                    <input type="file" id="input-galeria" accept="image/*" style="display: none;">
+                    <input type="file" id="input-camara" accept="image/*" capture="environment" style="display: none;">
+
                     <div id="preview-container" class="preview-container hidden">
                         <img id="img-preview" src="" alt="Vista previa">
                         <button type="button" id="btn-remove-img"><i class='bx bx-x'></i></button>
@@ -76,7 +78,29 @@
 
             </form>
         </main>
+
+        <div id="modal-media-picker" class="media-modal hidden">
+            <div class="media-modal-content">
+                <h3>Seleccionar origen de la imagen</h3>
+                <p>Elige cómo deseas adjuntar la evidencia de la anomalía:</p>
+                
+                <div class="media-modal-options">
+                    <button type="button" id="btn-choose-camera" class="modal-opt-btn">
+                        <i class='bx bx-camera'></i>
+                        <span>Cámara en vivo</span>
+                    </button>
+                    <button type="button" id="btn-choose-gallery" class="modal-opt-btn">
+                        <i class='bx bx-image'></i>
+                        <span>Galería o Archivos</span>
+                    </button>
+                </div>
+                
+                <button type="button" id="btn-close-media-modal" class="btn-modal-cancel">Cancelar</button>
+            </div>
+        </div>
+
     </div>
+
     <nav class="bottom-nav">
         <a href="index.html" class="nav-item">
             <i class='bx bx-plus-circle'></i>

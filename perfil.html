@@ -21,7 +21,10 @@
 
         <div class="profile-card-hero">
             <div class="avatar-wrapper">
-                <img src="img/default-avatar.png" id="profile-preview" alt="Foto de perfil">
+                <div class="avatar-display-container">
+                    <img src="" id="profile-preview" alt="Foto de perfil" class="hidden">
+                    <i class='bx bx-user' id="profile-icon-placeholder"></i>
+                </div>
                 <label for="file-avatar" class="avatar-edit-badge">
                     <i class='bx bx-camera'></i>
                 </label>
@@ -49,7 +52,7 @@
                 <label for="profile-password">Nueva Contraseña (Opcional)</label>
                 <div class="input-wrapper">
                     <i class='bx bx-lock-alt input-icon'></i>
-                    <input type="password" id="profile-password" placeholder="Mínimo 8 caracteres (letras y números)">
+                    <input type="password" id="profile-password" placeholder="Mínimo 8 caracteres (letras y números)" style="font-size: 10px; font-weight: bold;>
                     <i class='bx bx-hide password-toggle' id="toggle-profile-pass" style="cursor: pointer; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px;"></i>
                 </div>
                 <small class="input-help">Solo llénalo si deseas cambiar tu contraseña actual.</small>

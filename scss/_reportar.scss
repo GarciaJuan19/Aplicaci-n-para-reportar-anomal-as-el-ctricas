@@ -1,12 +1,7 @@
-// ==========================================
-// DISEÑO EXCLUSIVO: REPORTAR ANOMALÍA
-// (Utilizando tus variables y tu mixin)
-// ==========================================
-@use 'variables' as *; // Importamos tus variables globales
-// ==========================================
-// DISEÑO EXCLUSIVO: REPORTAR ANOMALÍA (WEB COMPLETA)
-// (Utilizando tus variables y tu mixin)
-// ==========================================
+// ==========================================================================
+// DISEÑO EXCLUSIVO: REPORTAR ANOMALÍA (WEB & PWA MOBILE CAPTURE)
+// ==========================================================================
+@use 'variables' as *;
 
 body {
   background-color: $color-blanco; // Fondo de la página web completamente blanco
@@ -23,7 +18,9 @@ body {
   flex-direction: column;
 }
 
-// 1. Barra superior plana expandida a lo ancho de la web
+// --------------------------------------------------------------------------
+// 1. BARRA SUPERIOR (HEADER)
+// --------------------------------------------------------------------------
 .app-header {
   background-color: $color-principal;
   color: $color-blanco;
@@ -58,7 +55,9 @@ body {
   }
 }
 
-// 2. Contenedor del formulario (Tarjeta centrada en la web)
+// --------------------------------------------------------------------------
+// 2. CONTENEDOR PRINCIPAL (CENTRADOR DE TARJETA)
+// --------------------------------------------------------------------------
 .app-content {
   padding: 40px 20px; // Más espacio arriba y abajo para entorno web
   flex: 1;
@@ -79,7 +78,9 @@ body {
   }
 }
 
-// 3. Inputs estilizados mediante tu Mixin
+// --------------------------------------------------------------------------
+// 3. ELEMENTOS DE ENTRADA (INPUT GROUPS & MIXINS)
+// --------------------------------------------------------------------------
 .input-group {
   display: flex;
   flex-direction: column;
@@ -100,7 +101,7 @@ body {
   }
 }
 
-// Contenedor del Select
+// Contenedor personalizado del Select
 .select-wrapper {
   position: relative;
   width: 100%;
@@ -123,7 +124,9 @@ body {
   }
 }
 
-// 4. Zona de Evidencia Fotográfica
+// --------------------------------------------------------------------------
+// 4. ZONA DE EVIDENCIA FOTOGRÁFICA Y CARGA
+// --------------------------------------------------------------------------
 .upload-container {
   border: 1.5px dashed lighten($color-principal, 15%);
   background-color: rgba($color-principal, 0.02);
@@ -153,7 +156,7 @@ body {
   }
 }
 
-// Contenedor de vista previa de imagen
+// Contenedor de vista previa del archivo adjunto
 .preview-container {
   position: relative;
   margin-top: 8px;
@@ -185,7 +188,9 @@ body {
   }
 }
 
-// 5. Botón de Ubicación
+// --------------------------------------------------------------------------
+// 5. COMPONENTE DE GEOLOCALIZACIÓN GPS
+// --------------------------------------------------------------------------
 .btn-secondary {
   width: 100%;
   background-color: $color-fondo-input;
@@ -228,7 +233,9 @@ body {
   }
 }
 
-// 6. Botón Principal de Envío
+// --------------------------------------------------------------------------
+// 6. BOTONES ACCIONADORES DE FORMULARIO
+// --------------------------------------------------------------------------
 .btn-primary {
   width: 100%;
   background-color: $color-principal;
@@ -252,6 +259,136 @@ body {
   }
 }
 
+// CLASE DE CONTROL AUXILIAR
 .hidden {
   display: none !important;
+}
+
+// --------------------------------------------------------------------------
+// 7. COMPONENTE: MODAL SELECCIÓN DE ORIGEN (MEDIA PICKER)
+// --------------------------------------------------------------------------
+.media-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(15, 23, 42, 0.6); // Capa oscura traslúcida
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end; // Por defecto abajo en entornos móviles (Estilo Bottom Sheet)
+  justify-content: center;
+  z-index: 2000;
+  
+  &.hidden {
+    display: none !important;
+  }
+}
+
+.media-modal-content {
+  background-color: $color-blanco;
+  width: 100%;
+  max-width: 500px;
+  padding: 24px;
+  border-radius: 20px 20px 0 0; // Bordes superiores redondeados para móviles
+  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  animation: slideUpModal 0.25s ease-out;
+
+  h3 {
+    margin: 0 0 6px 0;
+    color: $color-texto-oscuro;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 24px 0;
+    color: $color-texto-mutado; // Corrección hecha para coincidir con tus variables globales
+    font-size: 14px;
+    line-height: 1.4;
+  }
+}
+
+.media-modal-options {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.modal-opt-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: $color-fondo-input;
+  border: 1px solid $color-borde;
+  padding: 24px 16px;
+  border-radius: $border-radius-m; // Tus 12px
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: $fuente-base;
+  
+  i {
+    font-size: 32px;
+    color: $color-principal; // Mantiene consistencia visual de marca
+  }
+
+  span {
+    font-size: 14px;
+    font-weight: 600;
+    color: $color-texto-oscuro;
+  }
+
+  &:hover, &:active {
+    background-color: darken($color-fondo-input, 3%);
+    border-color: darken($color-borde, 10%);
+  }
+}
+
+.btn-modal-cancel {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  background-color: $color-fondo-input;
+  color: $color-texto-oscuro;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: $border-radius-s; // Tus 8px
+  cursor: pointer;
+  font-family: $fuente-base;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: darken($color-fondo-input, 5%);
+  }
+}
+
+// --------------------------------------------------------------------------
+// 8. ADAPTACIÓN RESPONSIVA (MEDIA QUERIES ESCRITORIO)
+// --------------------------------------------------------------------------
+@media (min-width: 600px) {
+  .media-modal {
+    align-items: center; // Centrar completamente en la pantalla de la PC
+  }
+  
+  .media-modal-content {
+    border-radius: $border-radius-m; // Cambia a bordes simétricos en pantallas grandes
+    animation: fadeInModal 0.2s ease-out;
+  }
+}
+
+// --------------------------------------------------------------------------
+// 9. ANIMACIONES (KEYFRAMES)
+// --------------------------------------------------------------------------
+@keyframes slideUpModal {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }

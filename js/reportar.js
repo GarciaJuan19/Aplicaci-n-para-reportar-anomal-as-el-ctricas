@@ -1,17 +1,22 @@
-
 import { db, auth } from './firebase-config.js';
 import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// Esperar a que el DOM de la página esté listo
 document.addEventListener('DOMContentLoaded', () => {
     
-    // REFERENCIAS DE LA CÁMARA 
+    // --- REFERENCIAS DE DISPARADORES Y CAPTURA ---
     const btnCamara = document.getElementById('btn-camara');
-    const inputFile = document.getElementById('input-file');
     const previewContainer = document.getElementById('preview-container');
     const imgPreview = document.getElementById('img-preview');
     const btnRemoveImg = document.getElementById('btn-remove-img');
+
+    // Elementos del Nuevo Selector Dinámico
+    const modalMediaPicker = document.getElementById('modal-media-picker');
+    const btnChooseCamera = document.getElementById('btn-choose-camera');
+    const btnChooseGallery = document.getElementById('btn-choose-gallery');
+    const btnCloseMediaModal = document.getElementById('btn-close-media-modal');
+    const inputGaleria = document.getElementById('input-galeria');
+    const inputCamara = document.getElementById('input-camara');
 
     // --- REFERENCIAS DEL GPS ---
     const btnLocation = document.getElementById('btn-location');
@@ -20,43 +25,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputLat = document.getElementById('latitud');
     const inputLng = document.getElementById('longitud');
 
-    // --- REFERENCIA DEL FORMULARIO 
+    // --- REFERENCIA DEL FORMULARIO ---
     const formReporte = document.getElementById('form-reporte');
     const btnEnviar = document.getElementById('btn-enviar');
 
-    // Simular el click en el input oculto al presionar la tarjeta punteada
+    let base64ReportImage = null; // Guardará el string final comprimido para Firestore
+
+    // 1. FLUJO INTERACTIVO DEL MODAL
     btnCamara.addEventListener('click', () => {
-        inputFile.click();
+        modalMediaPicker.classList.remove('hidden'); // Desplegar ventana de opciones
     });
 
-    // Capturar el archivo de imagen seleccionado o tomado por la cámara
-    inputFile.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        
+    btnCloseMediaModal.addEventListener('click', () => {
+        modalMediaPicker.classList.add('hidden'); // Ocultar si cancela
+    });
+
+    btnChooseCamera.addEventListener('click', () => {
+        modalMediaPicker.classList.add('hidden');
+        inputCamara.click(); // Abre la cámara del móvil nativamente
+    });
+
+    btnChooseGallery.addEventListener('click', () => {
+        modalMediaPicker.classList.add('hidden');
+        inputGaleria.click(); // Abre la galería de fotos nativa
+    });
+
+    // 2. FUNCIÓN PROCESADORA DE IMAGEN A BASE64
+    function procesarArchivoImagen(file) {
         if (file) {
-            const reader = new FileReader();
-            
-            // Renderizar la imagen en pantalla en formato Base64 al terminar de leerla
-            reader.onload = function(event) {
-                imgPreview.src = event.target.result;
-                previewContainer.classList.remove('hidden'); // Muestra la foto
-                btnCamara.classList.add('hidden');           // Oculta el cargador
+            // Validar que no supere 1MB para no saturar Firestore
+            if (file.size > 1024 * 1024) {
+                alert("⚠️ La imagen seleccionada es muy pesada. Intenta con otra menor a 1MB.");
+                return;
             }
-            
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                base64ReportImage = event.target.result;
+                imgPreview.src = base64ReportImage;
+                previewContainer.classList.remove('hidden'); 
+                btnCamara.classList.add('hidden');           
+            };
             reader.readAsDataURL(file);
         }
-    });
+    }
+
+    // Escuchadores de eventos para ambos flujos independientes
+    inputCamara.addEventListener('change', (e) => procesarArchivoImagen(e.target.files[0]));
+    inputGaleria.addEventListener('change', (e) => procesarArchivoImagen(e.target.files[0]));
 
     // Quitar la imagen y resetear el componente de carga
     btnRemoveImg.addEventListener('click', (e) => {
-        e.stopPropagation(); // Evita que el evento afecte al contenedor padre
-        inputFile.value = ''; 
+        e.stopPropagation(); 
+        inputCamara.value = ''; 
+        inputGaleria.value = ''; 
         imgPreview.src = '';
+        base64ReportImage = null;
         previewContainer.classList.add('hidden');
         btnCamara.classList.remove('hidden');
     });
 
-
+    // 3. LÓGICA DE GEOLOCALIZACIÓN GPS
     btnLocation.addEventListener('click', () => {
         if (!navigator.geolocation) {
             geoText.innerText = "Tu dispositivo no soporta geolocalización.";
@@ -71,11 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
 
-                // Guardar las coordenadas en los inputs ocultos
                 inputLat.value = lat;
                 inputLng.value = lng;
 
-                // Actualizar la interfaz visualmente
                 geoText.innerText = `Ubicación fijada: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
                 geoText.classList.add('success-text');
                 geoSuccessIcon.classList.remove('hidden');
@@ -101,16 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             {
-                enableHighAccuracy: true, // Forzar la máxima precisión del GPS del móvil
-                timeout: 10000,           // Tiempo límite de respuesta: 10 segundos
-                maximumAge: 0             // No utilizar datos guardados en caché
+                enableHighAccuracy: true,
+                timeout: 10000,          
+                maximumAge: 0            
             }
         );
     });
 
-// Enviar datos a firebase al enviar el formulario
+    // 4. SUBIDA COMPLETA DEL REPORTE A LA NUBE
     formReporte.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Detener la recarga por defecto de la página
+        e.preventDefault(); 
 
         const user = auth.currentUser;
         if (!user) {
@@ -123,19 +150,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const lat = inputLat.value;
         const lng = inputLng.value;
 
-        
         if (!lat || !lng) {
             alert("⚠️ Por favor, obtén tu ubicación GPS antes de enviar el reporte.");
             return;
         }
 
-        // Bloquear interfaz para evitar múltiples envíos accidentales
         btnEnviar.disabled = true;
         btnEnviar.innerText = "Subiendo reporte a la nube...";
 
         try {
-            // Estructurar e insertar el documento NoSQL dentro de la colección "reportes"
-            const docRef = await addDoc(collection(db, "reportes"), {
+            // Mapeamos los datos estructurados incluyendo la foto si existe
+            const nuevoReporteData = {
                 id_usuario: user.uid,
                 tipo_anomalia: tipoFalla,
                 descripcion: descripcion,
@@ -145,12 +170,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 estado: "pendiente", 
                 fecha_creacion: new Date().toISOString()
-            });
+            };
+
+            // Adjuntar foto en formato Base64 de forma opcional al reporte NoSQL
+            if (base64ReportImage) {
+                nuevoReporteData.fotoUrl = base64ReportImage;
+            }
+
+            const docRef = await addDoc(collection(db, "reportes"), nuevoReporteData);
 
             alert(`🎉 ¡Reporte enviado con éxito!\nCódigo de folio: ${docRef.id}`);
             
-            // Limpiar todo el formulario tras el éxito
+            // Limpieza completa posterior al éxito
             formReporte.reset();
+            inputCamara.value = '';
+            inputGaleria.value = '';
+            base64ReportImage = null;
             geoSuccessIcon.classList.add('hidden');
             geoText.innerText = "Ubicación no establecida";
             geoText.classList.remove('success-text');
@@ -161,10 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error de Firestore: ", error);
             alert("❌ Ocurrió un error al conectar con el servidor. Revisa tu conexión.");
         } finally {
-            // Reestablecer el estado original del botón de acción
             btnEnviar.disabled = false;
             btnEnviar.innerHTML = "<i class='bx bx-send'></i> Enviar Reporte";
         }
     });
-
 });

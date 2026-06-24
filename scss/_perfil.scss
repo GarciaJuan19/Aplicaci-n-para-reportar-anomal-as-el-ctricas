@@ -128,3 +128,32 @@ $color-peligro: #ef4444;
         background-color: rgba($color-peligro, 0.15);
     }
 }
+.avatar-display-container {
+    width: 100px;
+    height: 100px;
+    background-color: #e2e8f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+
+    // Estilo del icono por defecto
+    i.bx-user {
+        font-size: 54px;
+        color: #94a3b8;
+    }
+
+    // Estilo de la imagen de perfil recortada de manera circular
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    // Clase auxiliar para ocultar de manera limpia
+    .hidden {
+        display: none !important;
+    }
+}

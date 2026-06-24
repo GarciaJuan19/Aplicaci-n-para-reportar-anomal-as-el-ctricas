@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    // --- ELEMENTOS DEL DOM ---
     const profileNameInput = document.getElementById('profile-name');
     const profilePasswordInput = document.getElementById('profile-password');
     const togglePasswordBtn = document.getElementById('toggle-profile-pass');
@@ -14,52 +15,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const txtHeroEmail = document.getElementById('txt-user-email');
     const fileAvatar = document.getElementById('file-avatar');
     const profilePreview = document.getElementById('profile-preview');
+    const profileIconPlaceholder = document.getElementById('profile-icon-placeholder');
 
     let currentUserDocRef = null;
+    let base64ImageString = null; // Guardará el string largo de la nueva imagen seleccionada
 
-    // --- PRECONDICIÓN: VERIFICAR AUTENTICACIÓN Y RECUPERAR DATOS ---
+    // --- 1. VERIFICAR AUTENTICACIÓN Y CARGAR DATOS DE FIRESTORE ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
+            // Colocamos el correo del Auth como respaldo inmediato mientras descarga Firestore
             txtHeroEmail.textContent = user.email;
-            currentUserDocRef = doc(db, "usuarios", user.uid); // Referencia RN-07 (cuenta propia)
+            currentUserDocRef = doc(db, "usuarios", user.uid);
 
             try {
                 const docSnap = await getDoc(currentUserDocRef);
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
+                    console.log("Datos reales leídos de Firestore:", userData);
+
+                    // Mapeo exacto con los campos reales de tu Firestore (nombre, nombre_completo, correo_electronico)
+                    const nombreFinal = userData.nombre || userData.nombre_completo || "Ciudadano";
+                    const correoFinal = userData.correo_electronico || user.email;
+
+                    // Pintar datos en la interfaz
+                    profileNameInput.value = nombreFinal;
+                    txtHeroName.textContent = nombreFinal;
+                    txtHeroEmail.textContent = correoFinal;
                     
-                    // Cargar datos en el formulario (CA-01)
-                    profileNameInput.value = userData.nombre || "";
-                    txtHeroName.textContent = userData.nombre || "Ciudadano";
-                    
-                    if (userData.fotoUrl) {
+                    // Control visual del Avatar (Imagen vs Icono de usuario)
+                    if (userData.fotoUrl && userData.fotoUrl.trim() !== "") {
                         profilePreview.src = userData.fotoUrl;
+                        profilePreview.classList.remove('hidden');
+                        if (profileIconPlaceholder) profileIconPlaceholder.classList.add('hidden');
+                    } else {
+                        profilePreview.classList.add('hidden');
+                        if (profileIconPlaceholder) profileIconPlaceholder.classList.remove('hidden');
                     }
                 } else {
-                    console.log("No se encontró documento del usuario en Firestore.");
+                    console.log("No existe el documento para este UID en Firestore. Se creará al guardar.");
+                    txtHeroName.textContent = "Usuario Nuevo";
+                    profileNameInput.value = "";
                 }
             } catch (error) {
-                console.error("Error recuperando Firestore:", error);
+                console.error("Error al traer datos de Firestore:", error);
             }
         } else {
-            // Si no está autenticado, redirigir al login inmediatamente
+            // Si el usuario no está logueado, redirigir al login
             window.location.href = 'index.html';
         }
     });
 
-    // --- INTERACTIVIDAD: PREVISUALIZAR IMAGEN LOCAL (OPCIONAL) ---
+    // --- 2. INTERACTIVIDAD: CONVERTIR IMAGEN LOCAL A BASE64 ---
     fileAvatar.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Validación de peso (Máximo 1MB para cuidar el almacenamiento de Firestore)
+            if (file.size > 1024 * 1024) {
+                alert("⚠️ La imagen es demasiado grande. Selecciona una menor a 1MB.");
+                fileAvatar.value = "";
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(event) {
-                profilePreview.src = event.target.result; // Cambia la vista previa local
+                base64ImageString = event.target.result; // Aquí se genera el string "data:image/...;base64,..."
+                profilePreview.src = base64ImageString;
+                
+                // Intercambio de estados visuales
+                profilePreview.classList.remove('hidden');
+                if (profileIconPlaceholder) profileIconPlaceholder.classList.add('hidden');
             }
             reader.readAsDataURL(file);
         }
     });
 
-    // --- INTERACTIVIDAD: MOSTRAR/OCULTAR CONTRASEÑA ---
+    // --- 3. INTERACTIVIDAD: VER / OCULTAR CONTRASEÑA ---
     if (togglePasswordBtn && profilePasswordInput) {
         togglePasswordBtn.addEventListener('click', function () {
             const isPassword = profilePasswordInput.getAttribute('type') === 'password';
@@ -69,64 +99,69 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- VALIDACIÓN DE REGLAS DE NEGOCIO (RN-05) ---
+    // --- 4. VALIDACIÓN DE REGLAS DE NEGOCIO (Mínimo 8 caracteres, letras y números) ---
     function validarContrasena(password) {
-        // Criterio: Mínimo 8 caracteres, al menos una letra y al menos un número
         const tieneLetra = /[a-zA-Z]/.test(password);
         const tieneNumero = /[0-9]/.test(password);
         const longitudValida = password.length >= 8;
-
         return tieneLetra && tieneNumero && longitudValida;
     }
 
-    // --- PROCESO: GUARDAR CAMBIOS (SUBMIT) ---
+    // --- 5. ENVIAR FORMULARIO: PROCESAR CAMBIOS EN FIRESTORE Y AUTH ---
     formProfile.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const nuevoNombre = profileNameInput.value.trim();
         const nuevaContrasena = profilePasswordInput.value.trim();
 
-        // Cambiar estado del botón
+        // Deshabilitar botón y poner animación de carga
         btnSave.disabled = true;
         btnSave.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Guardando...";
 
         try {
-            // 1. Validar y actualizar Contraseña si el usuario escribió algo (RN-05)
+            // A) Actualizar contraseña en Firebase Auth si el usuario escribió algo
             if (nuevaContrasena !== "") {
                 if (!validarContrasena(nuevaContrasena)) {
                     alert("⚠️ La contraseña no cumple los criterios mínimos de seguridad:\n- Mínimo 8 caracteres.\n- Debe incluir letras y números.");
                     btnSave.disabled = false;
                     btnSave.innerHTML = "<i class='bx bx-save'></i> Guardar Cambios";
-                    return; // Detiene el proceso (Mensaje de validación incorrecta)
+                    return;
                 }
-
-                // Si pasa la validación, se actualiza en Firebase Auth
                 await updatePassword(auth.currentUser, nuevaContrasena);
             }
 
-            // 2. Actualizar datos en Firebase Firestore (CA-04)
+            // B) Guardar los cambios en Cloud Firestore
             if (currentUserDocRef) {
-                await updateDoc(currentUserDocRef, {
-                    nombre: nuevoNombre
-                    // Nota: Aquí se puede adjuntar la URL de la foto si manejas Firebase Storage
-                });
+                // Actualizamos 'nombre' y 'nombre_completo' simultáneamente para mantener limpia tu estructura
+                const datosActualizados = {
+                    nombre: nuevoNombre,
+                    nombre_completo: nuevoNombre
+                };
 
-                // Actualizar interfaz visual superior instantáneamente (Postcondición)
+                // Si hay un string de imagen Base64 listo, lo incrustamos en el mapa de actualización
+                if (base64ImageString) {
+                    datosActualizados.fotoUrl = base64ImageString;
+                }
+
+                await updateDoc(currentUserDocRef, datosActualizados);
+
+                // Actualizar de inmediato el widget de texto superior
                 txtHeroName.textContent = nuevoNombre;
 
-                // Mensaje de éxito (CA-05)
                 alert("✨ ¡Perfil actualizado correctamente!");
-                profilePasswordInput.value = ""; // Limpiar campo de clave por seguridad
+                profilePasswordInput.value = ""; // Limpiar campo de contraseña por seguridad
+                base64ImageString = null; // Limpiar buffer temporal de la imagen
             }
 
         } catch (error) {
-            console.error("Error al actualizar:", error);
+            console.error("Error crítico al actualizar el perfil:", error);
             if (error.code === 'auth/requires-recent-login') {
-                alert("🔒 Por seguridad, necesitas reautenticarte (cerrar e iniciar sesión de nuevo) para cambiar tu contraseña.");
+                alert("🔒 Por seguridad, necesitas cerrar sesión e iniciarla nuevamente para poder cambiar tu contraseña.");
             } else {
-                alert("❌ Ocurrió un error al guardar los cambios. Inténtalo de nuevo.");
+                alert("❌ Ocurrió un error al guardar los cambios en la base de datos.");
             }
         } finally {
+            // Restaurar estado del botón
             btnSave.disabled = false;
             btnSave.innerHTML = "<i class='bx bx-save'></i> Guardar Cambios";
         }
