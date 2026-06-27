@@ -1,8 +1,5 @@
 import { auth } from './firebase-config.js'; 
-import { 
-    sendPasswordResetEmail, 
-    fetchSignInMethodsForEmail  // 🆕 Para verificar si el correo existe
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const formularioRecuperar = document.getElementById('form-recuperar');
@@ -15,55 +12,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const correo = inputCorreo.value.trim();
 
-            // Validación de campo vacío
             if (!correo) {
                 mostrarToast('Por favor, ingresa tu correo electrónico.', 'error');
                 return;
             }
 
-            // Validación de formato de email
             if (!correo.includes('@') || !correo.includes('.')) {
                 mostrarToast('Por favor, ingresa un correo electrónico válido.', 'error');
                 return;
             }
 
+            btnRecuperar.disabled = true;
+            btnRecuperar.innerHTML = `<i class='bx bx-loader-alt bx-spin'></i> Enviando...`;
+
             try {
-                // 🆕 Verificar si el correo existe en Firebase Auth
-                const metodos = await fetchSignInMethodsForEmail(auth, correo);
-                
-                if (metodos.length === 0) {
-                    mostrarToast('⚠️ No existe ninguna cuenta con este correo.', 'error');
-                    return;
-                }
+                await sendPasswordResetEmail(auth, correo);
 
-                // Bloquear botón y activar estado de carga
-                btnRecuperar.disabled = true;
-                btnRecuperar.innerHTML = `<i class='bx bx-loader-alt bx-spin'></i> Enviando...`;
-
-                // Método nativo de Firebase para enviar el correo
-                await sendPasswordResetEmail(auth, correo, {
-                    url: window.location.href.replace('recuperarPassword.html', 'login.html'),
-                    handleCodeInApp: false
-                });
-
-                console.log("Correo enviado a:", correo);
                 mostrarToast('✅ ¡Enlace enviado! Revisa tu bandeja de entrada o SPAM.', 'exito');
-
                 formularioRecuperar.reset();
 
-                // Redirigir al login después de 4 segundos
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 4000);
 
             } catch (error) {
-                console.error("Error detallado:", error.code, error.message);
-                
-                // Reactivar botón en caso de error
+                console.error("Error:", error.code, error.message);
+
                 btnRecuperar.disabled = false;
                 btnRecuperar.innerHTML = `Enviar Enlace`;
 
-                // Manejo de errores detallado
                 switch (error.code) {
                     case 'auth/user-not-found':
                         mostrarToast('⚠️ No existe ninguna cuenta con este correo.', 'error');
@@ -72,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         mostrarToast('⚠️ El formato del correo no es válido.', 'error');
                         break;
                     case 'auth/too-many-requests':
-                        mostrarToast('⏱️ Demasiados intentos. Espera 5 minutos.', 'error');
+                        mostrarToast('⏱️ Demasiados intentos. Espera unos minutos.', 'error');
                         break;
                     default:
                         mostrarToast('❌ Error: ' + error.message, 'error');
@@ -82,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- TOASTS MEJORADOS ---
     function mostrarToast(mensaje, tipo) {
         const toastsExistentes = document.querySelectorAll('.toast-alerta');
         toastsExistentes.forEach(t => t.remove());
@@ -130,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     }
 
-    // Estilos para toast
     const styleToast = document.createElement('style');
     styleToast.textContent = `
         @keyframes slideUpToast {
@@ -141,9 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             animation: slideUpToast 0.3s ease-out !important;
             font-family: system-ui, -apple-system, sans-serif;
         }
-        .toast-alerta i {
-            font-size: 20px;
-        }
+        .toast-alerta i { font-size: 20px; }
     `;
     document.head.appendChild(styleToast);
 });

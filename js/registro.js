@@ -84,10 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log("📧 Enviando verificación a:", correo);
                     console.log("🔗 Redirigirá a:", menuUrl);
                     
-                    await sendEmailVerification(usuario, {
-                        url: menuUrl,  // 🔵 AHORA REDIRIGE AL MENÚ
-                        handleCodeInApp: false
-                    });
+                    await sendEmailVerification(usuario);
                     console.log("✅ Correo de verificación enviado con éxito");
                 } catch (emailError) {
                     console.error("❌ Error al enviar correo:", emailError);
