@@ -1,6 +1,7 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { subirImagen, eliminarImagen, generarRutaImagen, fileToBase64 } from './storage-utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -18,12 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileIconPlaceholder = document.getElementById('profile-icon-placeholder');
 
     let currentUserDocRef = null;
-    let base64ImageString = null; // Guardará el string largo de la nueva imagen seleccionada
+    let fotoActualRef = null;
+    let archivoSeleccionado = null;
 
-    // --- 1. VERIFICAR AUTENTICACIÓN Y CARGAR DATOS DE FIRESTORE ---
+    // --- 1. VERIFICAR AUTENTICACIÓN Y CARGAR DATOS ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // Colocamos el correo del Auth como respaldo inmediato mientras descarga Firestore
             txtHeroEmail.textContent = user.email;
             currentUserDocRef = doc(db, "usuarios", user.uid);
 
@@ -31,65 +32,65 @@ document.addEventListener('DOMContentLoaded', () => {
                 const docSnap = await getDoc(currentUserDocRef);
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
-                    console.log("Datos reales leídos de Firestore:", userData);
-
-                    // Mapeo exacto con los campos reales de tu Firestore (nombre, nombre_completo, correo_electronico)
                     const nombreFinal = userData.nombre || userData.nombre_completo || "Ciudadano";
-                    const correoFinal = userData.correo_electronico || user.email;
+                    
+                    const fotoUrl = userData.fotoPerfil || userData.fotoUrl || null;
+                    fotoActualRef = userData.fotoPerfilRef || null;
 
-                    // Pintar datos en la interfaz
                     profileNameInput.value = nombreFinal;
                     txtHeroName.textContent = nombreFinal;
-                    txtHeroEmail.textContent = correoFinal;
                     
-                    // Control visual del Avatar (Imagen vs Icono de usuario)
-                    if (userData.fotoUrl && userData.fotoUrl.trim() !== "") {
-                        profilePreview.src = userData.fotoUrl;
+                    if (fotoUrl) {
+                        profilePreview.src = fotoUrl;
                         profilePreview.classList.remove('hidden');
-                        if (profileIconPlaceholder) profileIconPlaceholder.classList.add('hidden');
+                        profileIconPlaceholder.classList.add('hidden');
                     } else {
                         profilePreview.classList.add('hidden');
-                        if (profileIconPlaceholder) profileIconPlaceholder.classList.remove('hidden');
+                        profileIconPlaceholder.classList.remove('hidden');
                     }
                 } else {
-                    console.log("No existe el documento para este UID en Firestore. Se creará al guardar.");
                     txtHeroName.textContent = "Usuario Nuevo";
                     profileNameInput.value = "";
                 }
             } catch (error) {
-                console.error("Error al traer datos de Firestore:", error);
+                console.error("Error al traer datos:", error);
+                mostrarToast('Error al cargar los datos', 'error');
             }
         } else {
-            // Si el usuario no está logueado, redirigir al login
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         }
     });
 
-    // --- 2. INTERACTIVIDAD: CONVERTIR IMAGEN LOCAL A BASE64 ---
+    // --- 2. SELECCIONAR IMAGEN ---
     fileAvatar.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Validación de peso (Máximo 1MB para cuidar el almacenamiento de Firestore)
-            if (file.size > 1024 * 1024) {
-                alert("⚠️ La imagen es demasiado grande. Selecciona una menor a 1MB.");
+            if (file.size > 3 * 1024 * 1024) {
+                mostrarToast('⚠️ La imagen es demasiado grande. Máximo 3MB.', 'error');
                 fileAvatar.value = "";
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                base64ImageString = event.target.result; // Aquí se genera el string "data:image/...;base64,..."
-                profilePreview.src = base64ImageString;
-                
-                // Intercambio de estados visuales
-                profilePreview.classList.remove('hidden');
-                if (profileIconPlaceholder) profileIconPlaceholder.classList.add('hidden');
+            if (!file.type.startsWith('image/')) {
+                mostrarToast('⚠️ Selecciona una imagen válida.', 'error');
+                fileAvatar.value = "";
+                return;
             }
-            reader.readAsDataURL(file);
+
+            archivoSeleccionado = file;
+
+            fileToBase64(file).then(base64 => {
+                profilePreview.src = base64;
+                profilePreview.classList.remove('hidden');
+                profileIconPlaceholder.classList.add('hidden');
+                mostrarToast('📷 Imagen seleccionada', 'exito');
+            }).catch(() => {
+                mostrarToast('❌ Error al leer la imagen', 'error');
+            });
         }
     });
 
-    // --- 3. INTERACTIVIDAD: VER / OCULTAR CONTRASEÑA ---
+    // --- 3. MOSTRAR/OCULTAR CONTRASEÑA ---
     if (togglePasswordBtn && profilePasswordInput) {
         togglePasswordBtn.addEventListener('click', function () {
             const isPassword = profilePasswordInput.getAttribute('type') === 'password';
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. VALIDACIÓN DE REGLAS DE NEGOCIO (Mínimo 8 caracteres, letras y números) ---
+    // --- 4. VALIDAR CONTRASEÑA ---
     function validarContrasena(password) {
         const tieneLetra = /[a-zA-Z]/.test(password);
         const tieneNumero = /[0-9]/.test(password);
@@ -107,22 +108,68 @@ document.addEventListener('DOMContentLoaded', () => {
         return tieneLetra && tieneNumero && longitudValida;
     }
 
-    // --- 5. ENVIAR FORMULARIO: PROCESAR CAMBIOS EN FIRESTORE Y AUTH ---
+    // --- 5. SISTEMA DE TOASTS ---
+    function mostrarToast(mensaje, tipo) {
+        const toastsExistentes = document.querySelectorAll('.toast-alerta');
+        toastsExistentes.forEach(t => t.remove());
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-alerta';
+        toast.innerHTML = `
+            <i class='bx ${tipo === 'error' ? 'bx-error-circle' : 'bx-check-circle'}'></i>
+            <span>${mensaje}</span>
+        `;
+        
+        const colorFondo = tipo === 'error' ? '#fef2f2' : '#f0fdf4';
+        const colorTexto = tipo === 'error' ? '#dc2626' : '#16a34a';
+        const colorBorde = tipo === 'error' ? '#fecaca' : '#bbf7d0';
+        
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${colorFondo};
+            color: ${colorTexto};
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid ${colorBorde};
+            max-width: 90%;
+            font-family: system-ui, -apple-system, sans-serif;
+            animation: slideUpToast 0.3s ease-out;
+        `;
+        
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(-50%) translateY(20px)';
+            toast.style.transition = 'all 0.4s ease';
+            setTimeout(() => toast.remove(), 400);
+        }, 3500);
+    }
+
+    // --- 6. GUARDAR CAMBIOS ---
     formProfile.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const nuevoNombre = profileNameInput.value.trim();
         const nuevaContrasena = profilePasswordInput.value.trim();
 
-        // Deshabilitar botón y poner animación de carga
         btnSave.disabled = true;
         btnSave.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Guardando...";
 
         try {
-            // A) Actualizar contraseña en Firebase Auth si el usuario escribió algo
             if (nuevaContrasena !== "") {
                 if (!validarContrasena(nuevaContrasena)) {
-                    alert("⚠️ La contraseña no cumple los criterios mínimos de seguridad:\n- Mínimo 8 caracteres.\n- Debe incluir letras y números.");
+                    mostrarToast('⚠️ Contraseña: mínimo 8 caracteres, letras y números.', 'error');
                     btnSave.disabled = false;
                     btnSave.innerHTML = "<i class='bx bx-save'></i> Guardar Cambios";
                     return;
@@ -130,40 +177,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 await updatePassword(auth.currentUser, nuevaContrasena);
             }
 
-            // B) Guardar los cambios en Cloud Firestore
+            let nuevaFotoUrl = null;
+            let nuevaFotoRef = null;
+
+            if (archivoSeleccionado) {
+                if (fotoActualRef) {
+                    await eliminarImagen(fotoActualRef);
+                }
+
+                const uid = auth.currentUser.uid;
+                const ruta = generarRutaImagen('usuarios', uid, archivoSeleccionado.name);
+                
+                nuevaFotoUrl = await subirImagen(archivoSeleccionado, ruta);
+                nuevaFotoRef = ruta;
+            }
+
             if (currentUserDocRef) {
-                // Actualizamos 'nombre' y 'nombre_completo' simultáneamente para mantener limpia tu estructura
                 const datosActualizados = {
                     nombre: nuevoNombre,
                     nombre_completo: nuevoNombre
                 };
 
-                // Si hay un string de imagen Base64 listo, lo incrustamos en el mapa de actualización
-                if (base64ImageString) {
-                    datosActualizados.fotoUrl = base64ImageString;
+                if (nuevaFotoUrl) {
+                    datosActualizados.fotoPerfil = nuevaFotoUrl;
+                    datosActualizados.fotoPerfilRef = nuevaFotoRef;
+                    datosActualizados.fotoUrl = nuevaFotoUrl;
                 }
 
                 await updateDoc(currentUserDocRef, datosActualizados);
 
-                // Actualizar de inmediato el widget de texto superior
                 txtHeroName.textContent = nuevoNombre;
+                if (nuevaFotoUrl) {
+                    profilePreview.src = nuevaFotoUrl;
+                    fotoActualRef = nuevaFotoRef;
+                }
 
-                alert("✨ ¡Perfil actualizado correctamente!");
-                profilePasswordInput.value = ""; // Limpiar campo de contraseña por seguridad
-                base64ImageString = null; // Limpiar buffer temporal de la imagen
+                mostrarToast('✨ ¡Perfil actualizado!', 'exito');
+                profilePasswordInput.value = "";
+                archivoSeleccionado = null;
+                fileAvatar.value = "";
             }
 
         } catch (error) {
-            console.error("Error crítico al actualizar el perfil:", error);
+            console.error("Error:", error);
             if (error.code === 'auth/requires-recent-login') {
-                alert("🔒 Por seguridad, necesitas cerrar sesión e iniciarla nuevamente para poder cambiar tu contraseña.");
+                mostrarToast('🔒 Cierra sesión y vuelve a iniciar para cambiar la contraseña.', 'error');
             } else {
-                alert("❌ Ocurrió un error al guardar los cambios en la base de datos.");
+                mostrarToast('❌ Error: ' + error.message, 'error');
             }
         } finally {
-            // Restaurar estado del botón
             btnSave.disabled = false;
             btnSave.innerHTML = "<i class='bx bx-save'></i> Guardar Cambios";
         }
     });
+
+    // Estilos para toast
+    const styleToast = document.createElement('style');
+    styleToast.textContent = `
+        @keyframes slideUpToast {
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .toast-alerta {
+            animation: slideUpToast 0.3s ease-out !important;
+        }
+        .toast-alerta i {
+            font-size: 20px;
+        }
+    `;
+    document.head.appendChild(styleToast);
 });

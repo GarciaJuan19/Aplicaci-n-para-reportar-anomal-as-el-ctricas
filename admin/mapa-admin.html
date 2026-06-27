@@ -11,6 +11,8 @@
     
     <link rel="stylesheet" href="../css/style.css">
     <script type="module" src="../js/mapa-admin.js"></script>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0052cc">
 </head>
 <body class="app-body">
     
@@ -41,7 +43,15 @@
     </nav>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ SW registrado:', reg.scope))
+        .catch(err => console.error('❌ SW error:', err));
+    });
+  }
+</script>
     
 </body>
 </html>

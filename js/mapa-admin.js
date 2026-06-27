@@ -94,77 +94,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. CARGAR Y ENCUADRAR REPORTES (Misma lógica con fitBounds)
-    function cargarReportesEnTiempoRealAdmin() {
-        const q = query(collection(db, "reportes"));
+    // 3. CARGAR Y ENCUADRAR REPORTES
+function cargarReportesEnTiempoRealAdmin() {
+    const q = query(collection(db, "reportes"));
+    
+    // ✅ Flag para solo hacer fitBounds la PRIMERA vez
+    let primeraVez = true;
 
-        onSnapshot(q, (querySnapshot) => {
-            capaMarcadores.clearLayers(); 
+    onSnapshot(q, (querySnapshot) => {
+        capaMarcadores.clearLayers();
+        
+        const limitesMapa = L.latLngBounds();
+        let tienePuntos = false;
+
+        querySnapshot.forEach((doc) => {
+            const reporte = doc.data();
+            const ubicacion = reporte.ubicacion;
             
-            const limitesMapa = L.latLngBounds();
-            let tienePuntos = false;
+            // ✅ Fix: tu DB usa tipoAnomalia (camelCase), no tipo_anomalia
+            const tipoAnomalia = reporte.tipoAnomalia || reporte.tipo_anomalia || 'Anomalía';
+            const estado = reporte.estado ? reporte.estado.toLowerCase() : 'pendiente';
+            const descripcion = reporte.descripcion;
 
-            console.log(`Leyendo del Firestore (Admin)... Total: ${querySnapshot.size}`);
+            if (ubicacion && ubicacion.latitud && ubicacion.longitud) {
+                const lat = parseFloat(ubicacion.latitud);
+                const lng = parseFloat(ubicacion.longitud);
 
-            querySnapshot.forEach((doc) => {
-                const reporte = doc.data();
-                
-                // Nota: El administrador ve TODOS los reportes, incluidos los "resueltos"
-                const ubicacion = reporte.ubicacion; 
-                const tipo_anomalia = reporte.tipo_anomalia;
-                const estado = reporte.estado ? reporte.estado.toLowerCase() : 'pendiente';
-                const descripcion = reporte.descripcion;
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    let bgBadge = '#ffe4e6'; let textBadge = '#e11d48';
+                    if (estado === 'en revisión' || estado === 'en revision') { bgBadge = '#fef3c7'; textBadge = '#d97706'; }
+                    if (estado === 'resuelto') { bgBadge = '#dcfce7'; textBadge = '#16a34a'; }
 
-                if (ubicacion && ubicacion.latitud && ubicacion.longitud) {
-                    const lat = parseFloat(ubicacion.latitud);
-                    const lng = parseFloat(ubicacion.longitud);
-
-                    if (!isNaN(lat) && !isNaN(lng)) {
-                        
-                        // Paleta de colores para los badges dentro del popup
-                        let bgBadge = '#ffe4e6'; let textBadge = '#e11d48';
-                        if (estado === 'en revisión' || estado === 'en revision') { bgBadge = '#fef3c7'; textBadge = '#d97706'; }
-                        if (estado === 'resuelto') { bgBadge = '#dcfce7'; textBadge = '#16a34a'; }
-
-                        const popupContenido = `
-                            <div class="map-popup" style="font-family: system-ui;">
-                                <h3 style="margin:0 0 4px 0; font-size:14px; color:#0f172a; text-transform: capitalize;">
-                                    <i class='bx bx-bolt'></i> ${tipo_anomalia || 'Anomalía'}
-                                </h3>
-                                <p style="margin:0 0 6px 0; font-size:12px; color:#475569;">${descripcion || 'Sin descripción.'}</p>
-                                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 6px; margin-top: 6px;">
-                                    <span style="font-size:10px; color:#94a3b8;">ID: ${doc.id.substring(0,6)}</span>
-                                    <span style="
-                                        display:inline-block;
-                                        padding:2px 8px;
-                                        border-radius:6px;
-                                        font-size:10px;
-                                        font-weight:700;
-                                        text-transform:uppercase;
-                                        background-color: ${bgBadge};
-                                        color: ${textBadge};
-                                    ">${estado}</span>
-                                </div>
+                    const popupContenido = `
+                        <div class="map-popup" style="font-family: system-ui;">
+                            <h3 style="margin:0 0 4px 0; font-size:14px; color:#0f172a; text-transform:capitalize;">
+                                <i class='bx bx-error'></i> ${tipoAnomalia}
+                            </h3>
+                            <p style="margin:0 0 6px 0; font-size:12px; color:#475569;">${descripcion || 'Sin descripción.'}</p>
+                            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #e2e8f0; padding-top:6px; margin-top:6px;">
+                                <span style="font-size:10px; color:#94a3b8;">ID: ${doc.id.substring(0,6)}</span>
+                                <span style="padding:2px 8px; border-radius:6px; font-size:10px; font-weight:700; text-transform:uppercase; background-color:${bgBadge}; color:${textBadge};">${estado}</span>
                             </div>
-                        `;
+                        </div>
+                    `;
 
-                        // Añadir marcador de color con su popup
-                        const marcador = L.marker([lat, lng], { icon: obtenerIconoPorEstado(estado) })
-                                          .bindPopup(popupContenido);
-                        marcador.addTo(capaMarcadores);
+                    const marcador = L.marker([lat, lng], { icon: obtenerIconoPorEstado(estado) })
+                                      .bindPopup(popupContenido);
+                    marcador.addTo(capaMarcadores);
 
-                        limitesMapa.extend([lat, lng]);
-                        tienePuntos = true;
-                    }
+                    limitesMapa.extend([lat, lng]);
+                    tienePuntos = true;
                 }
-            });
-
-            // Ajustar automáticamente la cámara para enfocar los puntos
-            if (tienePuntos && mapa) {
-                mapa.fitBounds(limitesMapa, { padding: [40, 40] }); 
             }
-
-        }, (error) => {
-            console.error("Error en onSnapshot de Firebase:", error);
         });
-    }
+
+        // ✅ Solo centra el mapa la primera vez que carga
+        if (tienePuntos && mapa && primeraVez) {
+            mapa.fitBounds(limitesMapa, { padding: [40, 40] });
+            primeraVez = false; // Ya no vuelve a mover el mapa
+        }
+
+    }, (error) => {
+        console.error("Error en onSnapshot:", error);
+    });
+}
 });

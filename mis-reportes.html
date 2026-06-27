@@ -7,6 +7,8 @@
     <script type="module" src="js/mis-reportes.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0052cc">
 </head>
 <body>
 
@@ -22,6 +24,7 @@
        <div class="filter-tabs-container">
     <div class="filter-tabs">
         <button type="button" class="tab active">Todos</button>
+        <button type="button" class="tab">Pendiente</button>
         <button type="button" class="tab">En revisión</button>
         <button type="button" class="tab">Resuelto</button>
     </div>
@@ -58,6 +61,15 @@
             <span>Perfil</span>
         </a>
     </nav>
-    
+    <!-- Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ SW registrado:', reg.scope))
+        .catch(err => console.error('❌ SW error:', err));
+    });
+  }
+</script>
 </body>
 </html>

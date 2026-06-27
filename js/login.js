@@ -1,42 +1,44 @@
-import { auth } from './firebase-config.js';
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { auth, db } from './firebase-config.js';
+import { 
+    signInWithEmailAndPassword,
+    sendEmailVerification
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getMenuUrl, mostrarToast, esAppMovil, esLocalhost } from './utils.js';
 
 // ==========================================
-//  LÓGICA INMEDIATA DEL SPLASH SCREEN
+//  SPLASH SCREEN
 // ==========================================
 (() => {
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
-            splash.classList.add('oculto'); // Aplica la transición opacidad/visibilidad
-            
-            // Opcional: Remueve completamente el nodo del DOM tras la animación 
-            // para que no interfiera con los clics del formulario inferior
+            splash.classList.add('oculto');
             setTimeout(() => {
                 splash.style.display = 'none';
-            }, 600); // 600ms coincide con la transición CSS
-        }, 2500); // Muestra la pantalla por 2.5 segundos
+            }, 600);
+        }, 2500);
     }
 })();
 
 // ==========================================
-//  EVENTOS INTERACTIVOS Y AUTENTICACIÓN
+//  LOGIN
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
 
-    const formLogin = document.getElementById('form-login') || document.querySelector('.card-form');
-    const btnIniciar = document.getElementById('btn-iniciar') || formLogin.querySelector('.btn-primary');
+    console.log("📱 Plataforma:", esAppMovil() ? "APK/Móvil" : "Web");
+    console.log("🌐 Localhost:", esLocalhost() ? "Sí" : "No");
+    console.log("🔵 URL menú (redirección):", getMenuUrl());
 
+    const formLogin = document.getElementById('form-login');
+    const btnIniciar = document.getElementById('btn-iniciar');
     const passwordInput = document.getElementById('login-password');
     const togglePasswordBtn = document.getElementById('toggle-password');
 
-    // Toggle para mostrar/ocultar contraseña
     if (togglePasswordBtn && passwordInput) {
         togglePasswordBtn.addEventListener('click', function () {
             const isPassword = passwordInput.getAttribute('type') === 'password';
             passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
-            
-            // Cambiar los íconos de Boxicons de forma fluida
             this.classList.toggle('bx-hide');
             this.classList.toggle('bx-show');
         });
@@ -47,50 +49,209 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // SUBMIT (FIREBASE)
+    // ==========================================
+    //  FUNCIÓN: MOSTRAR MODAL DE VERIFICACIÓN
+    // ==========================================
+    function mostrarModalReenvio(correo) {
+        const overlayExistente = document.getElementById('modal-verificacion-overlay');
+        if (overlayExistente) {
+            overlayExistente.remove();
+        }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'modal-verificacion-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+        `;
+
+        overlay.innerHTML = `
+            <div style="
+                background: white;
+                border-radius: 20px;
+                padding: 32px 24px;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                text-align: center;
+                position: relative;
+            ">
+                <div style="font-size: 48px; margin-bottom: 12px;">📧</div>
+                <h3 style="margin: 0 0 8px 0; color: #1e293b; font-size: 20px;">Verifica tu correo</h3>
+                <p style="margin: 0 0 20px 0; color: #64748b; font-size: 14px; line-height: 1.5;">
+                    Te hemos enviado un enlace de verificación a <strong>${correo}</strong>.<br>
+                    Revisa tu bandeja de entrada y carpeta de SPAM.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button id="btn-verificar-ya" style="
+                        background: #0a46d1;
+                        color: white;
+                        border: none;
+                        padding: 14px;
+                        border-radius: 12px;
+                        font-size: 15px;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">
+                        ✅ Ya verifiqué, iniciar sesión
+                    </button>
+                    <button id="btn-reenviar-verificacion" style="
+                        background: #f1f5f9;
+                        color: #475569;
+                        border: none;
+                        padding: 12px;
+                        border-radius: 12px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        cursor: pointer;
+                    ">
+                        🔄 Reenviar correo de verificación
+                    </button>
+                    <button id="btn-cerrar-modal-verif" style="
+                        background: none;
+                        border: none;
+                        color: #94a3b8;
+                        padding: 8px;
+                        font-size: 13px;
+                        cursor: pointer;
+                        margin-top: 4px;
+                    ">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        document.getElementById('btn-cerrar-modal-verif').addEventListener('click', () => {
+            overlay.remove();
+        });
+
+        document.getElementById('btn-verificar-ya').addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    await user.reload();
+                    if (user.emailVerified) {
+                        overlay.remove();
+                        if (user.email === 'admin1@gmail.com' || user.email.endsWith('@admin.com')) {
+                            window.location.href = 'admin/index.html';
+                        } else {
+                            window.location.href = 'menu.html';
+                        }
+                    } else {
+                        mostrarToast('⚠️ Tu correo aún no ha sido verificado. Revisa tu bandeja de entrada.', 'error');
+                    }
+                } catch (error) {
+                    mostrarToast('❌ Error al verificar: ' + error.message, 'error');
+                }
+            }
+        });
+
+        document.getElementById('btn-reenviar-verificacion').addEventListener('click', async () => {
+            try {
+                const user = auth.currentUser;
+                if (user) {
+                    await sendEmailVerification(user, {
+                        url: getMenuUrl(),  // 🔵 AHORA REDIRIGE AL MENÚ
+                        handleCodeInApp: false
+                    });
+                    mostrarToast('✅ ¡Correo reenviado! Revisa tu bandeja de entrada y SPAM.', 'exito');
+                }
+            } catch (error) {
+                mostrarToast('❌ Error al reenviar: ' + error.message, 'error');
+            }
+        });
+    }
+
+    // ==========================================
+    //  FUNCIÓN: VERIFICAR SI EL USUARIO ES NUEVO
+    // ==========================================
+    async function esUsuarioNuevo(uid) {
+        try {
+            const userDocRef = doc(db, "usuarios", uid);
+            const docSnap = await getDoc(userDocRef);
+            
+            if (!docSnap.exists()) {
+                return false;
+            }
+            
+            const data = docSnap.data();
+            return data.email_verificado !== undefined && data.email_verificado === false;
+            
+        } catch (error) {
+            console.error("Error al verificar usuario:", error);
+            return false;
+        }
+    }
+
+    // ==========================================
+    //  SUBMIT DEL LOGIN
+    // ==========================================
     formLogin.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Evitar que la página se recargue
+        e.preventDefault();
 
-        // Extraer los valores de los inputs de tu diseño
         const correo = formLogin.querySelector('input[type="email"]').value.trim();
-        const contrasena = passwordInput ? passwordInput.value : formLogin.querySelector('input[type="password"]').value;
+        const contrasena = passwordInput ? passwordInput.value : '';
 
-        // Deshabilitar el botón para evitar múltiples clics
+        if (!correo || !contrasena) {
+            mostrarToast('⚠️ Por favor, completa todos los campos.', 'error');
+            return;
+        }
+
         btnIniciar.disabled = true;
         btnIniciar.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Verificando...";
 
         try {
-            // Conectar con Firebase Authentication
             const userCredential = await signInWithEmailAndPassword(auth, correo, contrasena);
             const user = userCredential.user;
 
-            // CONTROL DE ROLES POR CORREO
+            await user.reload();
+
+            const nuevo = await esUsuarioNuevo(user.uid);
+
+            if (nuevo && !user.emailVerified) {
+                mostrarModalReenvio(correo);
+                btnIniciar.disabled = false;
+                btnIniciar.innerHTML = "<i class='bx bx-bolt'></i> Iniciar sesión";
+                return;
+            }
+
             if (user.email === 'admin1@gmail.com' || user.email.endsWith('@admin.com')) {
-                window.location.href = 'admin/index.html'; // Interfaz de Panel de Administración
+                window.location.href = 'admin/index.html';
             } else {
-                // Si es un ciudadano común, va al menú principal móvil
-                window.location.href = 'menu.html'; 
+                window.location.href = 'menu.html';
             }
 
         } catch (error) {
             console.error("Error en Firebase Auth:", error.code);
             
-            // Manejador de errores amigable para el usuario
+            let mensaje = '❌ Error al iniciar sesión.';
             switch (error.code) {
                 case 'auth/invalid-credential':
                 case 'auth/wrong-password':
                 case 'auth/user-not-found':
-                    alert("⚠️ El correo electrónico o la contraseña son incorrectos.");
+                    mensaje = '⚠️ El correo o la contraseña son incorrectos.';
                     break;
                 case 'auth/too-many-requests':
-                    alert("⚠️ Demasiados intentos fallidos. Cuenta bloqueada temporalmente.");
+                    mensaje = '⏱️ Demasiados intentos. Espera unos minutos.';
                     break;
                 default:
-                    alert("❌ Error al conectar con el servidor. Inténtalo más tarde.");
+                    mensaje = '❌ Error: ' + error.message;
                     break;
             }
-        } finally {
-            // Restaurar el botón a su estado original si ocurre un error
+            mostrarToast(mensaje, 'error');
+            
             btnIniciar.disabled = false;
             btnIniciar.innerHTML = "<i class='bx bx-bolt'></i> Iniciar sesión";
         }

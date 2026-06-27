@@ -1,21 +1,24 @@
 {
   "name": "FalloCero",
   "short_name": "FalloCero",
+  "description": "Reporta y monitorea anomalías eléctricas en tu comunidad",
   "start_url": "/login.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#f4f6f9",
+  "theme_color": "#0052cc",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icono-192.png",
+      "src": "img/Logo3.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "icono-512.png",
+      "src": "img/Logo3.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

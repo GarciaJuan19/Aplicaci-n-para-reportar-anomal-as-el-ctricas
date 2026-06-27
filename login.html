@@ -8,22 +8,20 @@
     <link rel="stylesheet" href="css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#0052cc">
 </head>
 
 <body class="login-page">
 
+    <!-- SPLASH SCREEN -->
     <div id="splash-screen" class="welcome-screen">
         <div class="welcome-card">
             <div class="welcome-logo-container">
                 <img src="img/Logo3.png" alt="FalloCero Logo" class="welcome-logo">
             </div>
-
             <h1 class="welcome-title">FalloCero</h1>
             <div class="welcome-divider"></div>
-
             <h2 class="welcome-subtitle">Bienvenido</h2>
-
             <p class="welcome-tagline">Tu plataforma para una ciudad conectada</p>
             <p class="welcome-description">
                 Colabora en la construcción de una infraestructura eléctrica eficiente
@@ -32,6 +30,7 @@
         </div>
     </div>
 
+    <!-- CONTENIDO DEL LOGIN -->
     <div class="login-content">
 
         <div class="login-brand">
@@ -42,6 +41,7 @@
             <p>Reporta y monitorea anomalías eléctricas</p>
         </div>
 
+        <!-- FORMULARIO DE LOGIN -->
         <form id="form-login" class="card-form">
 
             <div class="login-card-header">
@@ -93,16 +93,18 @@
 
     </div>
 
+    <!-- SCRIPTS -->
     <script type="module" src="js/login.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('Service Worker registrado con éxito', reg))
-                    .catch(err => console.error('Error al registrar el Service Worker', err));
-            });
-        }
-    </script>
+    <!-- Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ SW registrado:', reg.scope))
+        .catch(err => console.error('❌ SW error:', err));
+    });
+  }
+</script>
 </body>
 
 </html>

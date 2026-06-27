@@ -37,5 +37,12 @@ function watchFiles(done) {
     done(); 
 }
 
+// ✅ NUEVA TAREA "build" para Netlify
+function build(done) {
+    compileSass();
+    done();
+}
+
 exports.compileSass = compileSass;
+exports.build = build;        // <-- AGREGADO
 exports.default = series(compileSass, watchFiles);

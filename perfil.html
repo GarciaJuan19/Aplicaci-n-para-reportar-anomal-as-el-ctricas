@@ -7,6 +7,8 @@
     <title>FalloCero - Mi Perfil</title>
     <link rel="stylesheet" href="css/style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0052cc">
 </head>
 
 <body class="bg-light">
@@ -52,7 +54,7 @@
                 <label for="profile-password">Nueva Contraseña (Opcional)</label>
                 <div class="input-wrapper">
                     <i class='bx bx-lock-alt input-icon'></i>
-                    <input type="password" id="profile-password" placeholder="Mínimo 8 caracteres (letras y números)" style="font-size: 10px; font-weight: bold;>
+                    <input type="password" id="profile-password" placeholder="Mínimo 8 caracteres (letras y números)" style="font-size: 10px; font-weight: bold;">
                     <i class='bx bx-hide password-toggle' id="toggle-profile-pass" style="cursor: pointer; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 20px;"></i>
                 </div>
                 <small class="input-help">Solo llénalo si deseas cambiar tu contraseña actual.</small>
@@ -69,6 +71,16 @@
     </div>
 
     <script type="module" src="js/perfil.js"></script>
+    <!-- Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ SW registrado:', reg.scope))
+        .catch(err => console.error('❌ SW error:', err));
+    });
+  }
+</script>
 </body>
 
 </html>

@@ -283,3 +283,26 @@ $text-resuelto: #16a34a;
     color: $text-muted;
     i { font-size: 32px; margin-bottom: 8px; }
 }
+// ==========================================
+//  MODAL VER DETALLES
+// ==========================================
+#modal-detalle {
+    .modal-section-label {
+        color: $text-muted;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 600;
+        margin: 0 0 6px;
+    }
+
+    #btn-cerrar-modal {
+        transition: background 0.2s;
+        &:hover { background: #e2e8f0 !important; }
+    }
+
+    .btn-estado-modal {
+        transition: transform 0.1s;
+        &:active { transform: scale(0.96); }
+    }
+}

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,12 @@
     <link rel="stylesheet" href="css/style.css">
     <script type="module" src="js/reportar.js"></script>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0052cc">
+    
 </head>
+
 <body>
 
     <div class="app-container">
@@ -19,7 +25,7 @@
 
         <main class="app-content">
             <form id="form-reporte" class="card-form">
-                
+
                 <div class="input-group">
                     <label for="tipo-falla">Tipo de anomalía</label>
                     <div class="select-wrapper">
@@ -38,7 +44,8 @@
 
                 <div class="input-group">
                     <label for="descripcion">Descripción detallada</label>
-                    <textarea id="descripcion" rows="4" placeholder="Describe brevemente la situación o referencias del lugar..." required></textarea>
+                    <textarea id="descripcion" rows="4"
+                        placeholder="Describe brevemente la situación o referencias del lugar..." required></textarea>
                 </div>
 
                 <div class="input-group">
@@ -47,9 +54,8 @@
                         <i class='bx bx-camera'></i>
                         <span>Tomar foto o subir archivo</span>
                     </div>
-                    
-                    <input type="file" id="input-galeria" accept="image/*" style="display: none;">
-                    <input type="file" id="input-camara" accept="image/*" capture="environment" style="display: none;">
+
+                    <input type="file" id="input-galeria" accept="image/*" class="hidden">
 
                     <div id="preview-container" class="preview-container hidden">
                         <img id="img-preview" src="" alt="Vista previa">
@@ -79,11 +85,12 @@
             </form>
         </main>
 
+        <!-- Modal para elegir entre cámara o galería -->
         <div id="modal-media-picker" class="media-modal hidden">
             <div class="media-modal-content">
                 <h3>Seleccionar origen de la imagen</h3>
                 <p>Elige cómo deseas adjuntar la evidencia de la anomalía:</p>
-                
+
                 <div class="media-modal-options">
                     <button type="button" id="btn-choose-camera" class="modal-opt-btn">
                         <i class='bx bx-camera'></i>
@@ -94,8 +101,30 @@
                         <span>Galería o Archivos</span>
                     </button>
                 </div>
-                
+
                 <button type="button" id="btn-close-media-modal" class="btn-modal-cancel">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- 🆕 MODAL DE LA CÁMARA EN VIVO -->
+        <div id="modal-camera-live" class="media-modal hidden">
+            <div class="media-modal-content camera-modal-content">
+                <h3>📷 Tomar foto</h3>
+                <p>Apunta tu cámara al problema y presiona el botón para capturar</p>
+                
+                <div class="video-container">
+                    <video id="video-camera" autoplay playsinline></video>
+                    <canvas id="canvas-capture" style="display: none;"></canvas>
+                </div>
+                
+                <div class="camera-actions">
+                    <button type="button" id="btn-capture-photo" class="btn-primary">
+                        <i class='bx bx-camera'></i> Capturar foto
+                    </button>
+                    <button type="button" id="btn-close-camera" class="btn-modal-cancel">
+                        <i class='bx bx-x'></i> Cancelar
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -119,5 +148,16 @@
             <span>Perfil</span>
         </a>
     </nav>
+    <!-- Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ SW registrado:', reg.scope))
+        .catch(err => console.error('❌ SW error:', err));
+    });
+  }
+</script>
 </body>
+
 </html>
