@@ -29,11 +29,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnVerPassword = document.getElementById('toggle-reg-password');
     const btnVerConfirmar = document.getElementById('toggle-reg-confirmar');
 
+    // Elementos de los nuevos modales informativos
+    const linkTerminos = document.getElementById('link-terminos');
+    const linkPrivacidad = document.getElementById('link-privacidad');
+    const modalTerminos = document.getElementById('modal-terminos');
+    const modalPrivacidad = document.getElementById('modal-privacidad');
+    const btnCerrarTerminos = document.getElementById('cerrar-terminos');
+    const btnCerrarPrivacidad = document.getElementById('cerrar-privacidad');
+
     console.log("📱 Plataforma:", esAppMovil() ? "APK/Móvil" : "Web");
     console.log("🌐 Localhost:", esLocalhost() ? "Sí" : "No");
     console.log("🔵 URL base:", getBaseUrl());
     console.log("🔵 URL menú (redirección post-verificación):", getMenuUrl());
 
+    // ==========================================
+    //  LÓGICA: INTERRUPTORES MOSTRAR CONTRASENAS
+    // ==========================================
     if (btnVerPassword && inputPassword) {
         btnVerPassword.addEventListener('click', () => {
             const tipoActual = inputPassword.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -41,11 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const icono = btnVerPassword.querySelector('i');
             if (icono) {
-                if (tipoActual === 'text') {
-                    icono.className = 'bx bx-hide';
-                } else {
-                    icono.className = 'bx bx-show';
-                }
+                icono.className = tipoActual === 'text' ? 'bx bx-hide' : 'bx bx-show';
             }
         });
     }
@@ -57,14 +64,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const icono = btnVerConfirmar.querySelector('i');
             if (icono) {
-                if (tipoActual === 'text') {
-                    icono.className = 'bx bx-hide';
-                } else {
-                    icono.className = 'bx bx-show';
-                }
+                icono.className = tipoActual === 'text' ? 'bx bx-hide' : 'bx bx-show';
             }
         });
     }
+
+    // ==========================================
+    //  LÓGICA: PANELES MODALES (TÉRMINOS Y PRIVACIDAD)
+    // ==========================================
+    if (linkTerminos && modalTerminos) {
+        linkTerminos.addEventListener('click', (e) => {
+            e.preventDefault();
+            modalTerminos.style.display = 'flex';
+        });
+    }
+
+    if (linkPrivacidad && modalPrivacidad) {
+        linkPrivacidad.addEventListener('click', (e) => {
+            e.preventDefault();
+            modalPrivacidad.style.display = 'flex';
+        });
+    }
+
+    if (btnCerrarTerminos && modalTerminos) {
+        btnCerrarTerminos.addEventListener('click', () => {
+            modalTerminos.style.display = 'none';
+        });
+    }
+
+    if (btnCerrarPrivacidad && modalPrivacidad) {
+        btnCerrarPrivacidad.addEventListener('click', () => {
+            modalPrivacidad.style.display = 'none';
+        });
+    }
+
+    // Cerrar haciendo clic en el fondo difuminado (fuera de la caja blanca)
+    window.addEventListener('click', (e) => {
+        if (e.target === modalTerminos) modalTerminos.style.display = 'none';
+        if (e.target === modalPrivacidad) modalPrivacidad.style.display = 'none';
+    });
+
 
     // ==========================================
     //  FUNCIÓN: MODAL POST-REGISTRO (VERIFICACIÓN)
@@ -161,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const usuarioActual = auth.currentUser;
 
                 if (!usuarioActual) {
-                    // Por si la sesión se perdió (ej. cerró la pestaña), lo mandamos a login
                     mostrarToast('Tu sesión expiró, inicia sesión manualmente.', 'error');
                     window.location.href = 'login.html';
                     return;
@@ -170,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 await usuarioActual.reload();
 
                 if (usuarioActual.emailVerified) {
-                    // Actualizamos el estado en Firestore
                     try {
                         await updateDoc(doc(db, "usuarios", usuarioActual.uid), {
                             email_verificado: true
@@ -232,6 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==========================================
+    //  ENVÍO DEL FORMULARIO DE REGISTRO
+    // ==========================================
     if (formularioRegistro) {
         formularioRegistro.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -272,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const usuario = credencialUsuario.user;
                 console.log("✅ Cuenta creada en Auth. UID:", usuario.uid);
 
-                // 🔵 ENVIAR CORREO CON REDIRECCIÓN AL MENÚ
                 try {
                     const menuUrl = getMenuUrl();
                     console.log("📧 Enviando verificación a:", correo);
@@ -305,8 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnRegistrar.disabled = false;
                 btnRegistrar.innerHTML = `Registrar Cuenta`;
 
-                // 🔵 En vez de redirigir a login.html, mostramos el modal
-                // con el botón para verificar e iniciar sesión directo al menú.
                 mostrarModalVerificacionRegistro(correo, usuario.uid);
 
             } catch (error) {
